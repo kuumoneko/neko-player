@@ -1,32 +1,32 @@
 {
-  "name": "neko-player",
-  "version": "1.0.0",
-  "description": "",
-  "private": false,
-  "type": "module",
-  "homepage": "",
-  "scripts": {
-    "dev": "cross-env PORT=3008 next dev",
-    "build": "next build",
-    "start": "cross-env PORT=3008 next start"
-  },
-  "dependencies": {
-    "@fortawesome/free-solid-svg-icons": "^7.0.1",
-    "@fortawesome/react-fontawesome": "^3.0.2",
-    "@vercel/functions": "^3.1.1",
-    "bcrypt": "^6.0.0",
-    "mongodb": "^6.20.0",
-    "next": "^16.0.0",
-    "next-themes": "^0.4.6",
-    "react": "^19.2.0"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/next": "^8.0.7",
-    "@types/bcrypt": "^6.0.0",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "tailwindcss": "^4",
-    "typescript": "^5"
-  }
+    "name": "neko-player",
+    "version": "1.0.0",
+    "description": "Next.js web app to play music from youtube and spotify",
+    "private": false,
+    "type": "module",
+    "homepage": "https://neko-player.vercel.app/",
+    "scripts": {
+        "dev": "cross-env PORT=3008 next dev",
+        "build": "next build",
+        "start": "cross-env PORT=3008 next start"
+    },
+    "dependencies": {
+        "@fortawesome/free-solid-svg-icons": "^7.0.1",
+        "@fortawesome/react-fontawesome": "^3.0.2",
+        "@vercel/functions": "^3.1.1",
+        "bcrypt": "^6.0.0",
+        "mongodb": "^6.20.0",
+        "next": "^16.0.0",
+        "next-themes": "^0.4.6",
+        "react": "^19.2.0"
+    },
+    "devDependencies": {
+        "@tailwindcss/postcss": "^4",
+        "@types/next": "^8.0.7",
+        "@types/bcrypt": "^6.0.0",
+        "@types/node": "^20",
+        "@types/react": "^19",
+        "tailwindcss": "^4",
+        "typescript": "^5"
+    }
 }

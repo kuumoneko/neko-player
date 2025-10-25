@@ -21,8 +21,8 @@ export default function Auth({ seturl }: { seturl: (url: string) => void }) {
                 <div
                     className={`h-[58%] w-1/4 absolute bg-slate-800 ${
                         isSignIn
-                            ? "right-[533px] rounded-r-4xl rounded-l-full"
-                            : "left-[533px] rounded-l-4xl rounded-r-full"
+                            ? "right-1/4 rounded-r-4xl rounded-l-full"
+                            : "left-1/4 rounded-l-4xl rounded-r-full"
                     } transition-all duration-500`}
                 >
                     <div

@@ -19,7 +19,7 @@ export default function Auth({ seturl }: { seturl: (url: string) => void }) {
                     <Register seturl={seturl} />
                 </div>
                 <div
-                    className={`h-587/1024 w-1/4 absolute bg-slate-800 ${
+                    className={`h-57375/100000 w-1/4 absolute bg-slate-800 ${
                         isSignIn
                             ? "right-1/4 rounded-r-4xl rounded-l-full"
                             : "left-1/4 rounded-l-4xl rounded-r-full"

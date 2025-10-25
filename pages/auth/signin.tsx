@@ -29,7 +29,7 @@ export default function Signin({ seturl }: { seturl: (url: string) => void }) {
                         className="bg-slate-600 rounded-2xl px-2"
                         type={isShow ? "text" : "password"}
                         onChange={(e) => {
-                            setusername(e.target.value);
+                            setpassword(e.target.value);
                         }}
                     />
                     <span>

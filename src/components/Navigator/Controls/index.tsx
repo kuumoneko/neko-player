@@ -4,8 +4,6 @@ import {
     faArrowsRotate,
     faArrowRight,
     faHome,
-    faList,
-    faDownload,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
@@ -32,7 +30,7 @@ export default function ControlPanel({
     return (
         <div className="controlpanel flex flex-row gap-2.5">
             <span
-                className={`material-icons flex items-center gap-[5px] text-black dark:text-white cursor-default select-none ${
+                className={`material-icons flex items-center gap-[5px] text-white cursor-default select-none ${
                     JSON.parse(backward).length === 0
                         ? "opacity-50 pointer-events-none"
                         : ""
@@ -49,7 +47,7 @@ export default function ControlPanel({
                 <FontAwesomeIcon icon={faArrowLeft} />
             </span>
             <span
-                className={`material-icons flex items-center gap-[5px] text-black dark:text-white cursor-default select-none`}
+                className={`material-icons flex items-center gap-[5px] text-white cursor-default select-none`}
                 onClick={() => {
                     window.location.reload();
                 }}
@@ -57,7 +55,7 @@ export default function ControlPanel({
                 <FontAwesomeIcon icon={faArrowsRotate} />
             </span>
             <span
-                className={`material-icons flex items-center gap-[5px] text-black dark:text-white cursor-default select-none ${
+                className={`material-icons flex items-center gap-[5px] text-white cursor-default select-none ${
                     JSON.parse(forward).length === 0
                         ? "opacity-50 pointer-events-none"
                         : ""
@@ -72,8 +70,8 @@ export default function ControlPanel({
             >
                 <FontAwesomeIcon icon={faArrowRight} />
             </span>
-            <span
-                className={`material-icons flex items-center gap-[5px] text-black dark:text-white cursor-default select-none ${
+            {/* <span
+                className={`material-icons flex items-center gap-[5px] text-white cursor-default select-none ${
                     ishome ? "opacity-50 pointer-events-none" : ""
                 }`}
                 onClick={() => {
@@ -81,9 +79,9 @@ export default function ControlPanel({
                 }}
             >
                 <FontAwesomeIcon icon={faHome} />
-            </span>
+            </span> */}
             {/* <span
-                className="material-icons flex items-center gap-[5px] text-black dark:text-white cursor-default select-none"
+                className="material-icons flex items-center gap-[5px] text-white cursor-default select-none"
                 onClick={() => {
                     goto("/queue/play", seturl);
                 }}
@@ -91,7 +89,7 @@ export default function ControlPanel({
                 <FontAwesomeIcon icon={faList} />
             </span>
             <span
-                className="material-icons flex items-center gap-[5px] text-black dark:text-white cursor-default select-none"
+                className="material-icons flex items-center gap-[5px] text-white cursor-default select-none"
                 onClick={() => {
                     goto("/queue/download", seturl);
                 }}

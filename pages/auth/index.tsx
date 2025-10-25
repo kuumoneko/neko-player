@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Signin from "./signin";
 import Register from "./register";
 
-export default function Auth({ seturl }: { seturl: (url: string) => void }) {
+export default function Auth() {    
+    const [url, seturl] = useState("/");
+    useEffect(() => {
+        seturl(localStorage.getItem("url") ?? "/");
+    }, []);
     const [isSignIn, setIsSignIn] = useState(true);
 
     const handleToggle = () => {
@@ -37,7 +41,7 @@ export default function Auth({ seturl }: { seturl: (url: string) => void }) {
                             our services
                         </span>
                         <button
-                            className="mt-4 px-6 py-2 rounded-full bg-white text-slate-700 font-semibold"
+                            className="mt-4 px-6 py-2 rounded-full bg-white text-slate-700 font-semibold hover:cursor-pointer"
                             onClick={handleToggle}
                         >
                             REGISTER
@@ -55,7 +59,7 @@ export default function Auth({ seturl }: { seturl: (url: string) => void }) {
                             personal info
                         </span>
                         <button
-                            className="mt-4 px-6 py-2 rounded-full bg-white text-slate-700 font-semibold"
+                            className="mt-4 px-6 py-2 rounded-full bg-white text-slate-700 font-semibold hover:cursor-pointer"
                             onClick={handleToggle}
                         >
                             SIGN IN

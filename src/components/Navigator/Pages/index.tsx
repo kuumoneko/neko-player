@@ -1,5 +1,5 @@
 import { goto } from "@/lib/url";
-import { faDatabase, faBars, faUsers } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faUsers, faHome } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 
@@ -16,18 +16,34 @@ export default function ControlPages({
         }
     }, []);
 
-    const [activeIndex, setActiveIndex] = useState(0);
+    const [activeIndex, setActiveIndex] = useState(1);
+
+    useEffect(() => {
+        const run = setInterval(() => {
+            const url = localStorage.getItem("url") ?? "/";
+            if (url === "/") {
+                setActiveIndex(1);
+            } else if (url.includes("/playlists")) {
+                setActiveIndex(0);
+            } else if (url.includes("/artists")) {
+                setActiveIndex(2);
+            } else {
+                setActiveIndex(-1);
+            }
+        }, 1);
+        return () => clearInterval(run);
+    }, []);
 
     const menuItems = [
-        {
-            text: "Local",
-            icon: <FontAwesomeIcon icon={faDatabase} />,
-            url: "local",
-        },
         {
             text: "Playlists",
             icon: <FontAwesomeIcon icon={faBars} />,
             url: "playlists",
+        },
+        {
+            text: "Home",
+            icon: <FontAwesomeIcon icon={faHome} />,
+            url: "",
         },
         {
             text: "Artists",
@@ -84,6 +100,7 @@ export default function ControlPages({
                       after:content-[''] after:absolute after:top-[65%] after:right-[-18px] after:w-5 after:h-5 after:bg-transparent after:rounded-tl-[20px] after:shadow-[-1px_-10px_0_0_#0f172b] rotate-180"
                     style={{
                         transform: `translateX(${activeIndex * itemWidth}px)`,
+                        opacity: activeIndex === -1 ? 0 : 1,
                     }}
                 ></div>
             </ul>

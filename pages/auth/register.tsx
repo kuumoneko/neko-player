@@ -1,3 +1,5 @@
+import { goto } from "@/lib/url";
+import register from "@/utils/user/register";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
@@ -44,7 +46,38 @@ export default function Register({
                     </span>
                 </span>
             </form>
-            <button>Register</button>
+            <button
+                className="hover:cursor-pointer"
+                onClick={async () => {
+                    if (username.length === 0) {
+                        alert("Please enter username");
+                        return;
+                    }
+                    if (password.length === 0) {
+                        alert("Please enter password");
+                        return;
+                    }
+
+                    const passwordRegex =
+                        /^(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~])[A-Z].{7,}$/;
+                    if (!passwordRegex.test(password)) {
+                        alert(
+                            "Unvalid password. Your password need to have UpperCase at the first, number, special character and length more than 8"
+                        );
+                        return;
+                    }
+
+                    const res = await register(username, password);
+                    // console.log(res);
+                    if (res.ok) {
+                        localStorage.setItem("usernname", username);
+                        goto("/", seturl);
+                        window.location.href = "/";
+                    }
+                }}
+            >
+                Register
+            </button>
         </div>
     );
 }

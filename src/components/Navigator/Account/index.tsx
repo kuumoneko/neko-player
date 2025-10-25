@@ -1,4 +1,5 @@
 import { goto } from "@/lib/url";
+import logout from "@/utils/user/logout";
 import { useEffect, useState } from "react";
 
 export default function Account({ seturl }: { seturl: (url: string) => void }) {
@@ -21,9 +22,10 @@ export default function Account({ seturl }: { seturl: (url: string) => void }) {
             ) : (
                 <div
                     className="account bg-slate-600 px-2.5 py-1 rounded-4xl"
-                    onClick={() => {
+                    onClick={async () => {
+                        const res = await logout(username);
                         localStorage.setItem("username", "");
-                        cookieStore.delete("token");
+                        setusername("");
                         goto("/", seturl);
                     }}
                 >

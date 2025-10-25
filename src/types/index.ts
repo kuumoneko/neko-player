@@ -37,3 +37,14 @@ export interface PlayingUrl {
     url: string,
     source: "youtube" | "spotify" | "local"
 }
+
+export interface youtube_api_key {
+    key: string,
+    isReached: boolean
+}
+
+export interface PlayerOption {
+    youtube_api_keys: youtube_api_key[],
+    spotify_api_key: string,
+    spotify_clientid: string
+}

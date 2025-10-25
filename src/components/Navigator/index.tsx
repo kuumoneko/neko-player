@@ -1,4 +1,3 @@
-import { goto } from "@/lib/url";
 import ControlPanel from "./Controls";
 import ControlPages from "./Pages";
 import Account from "./Account";

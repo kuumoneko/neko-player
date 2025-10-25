@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { parse_body } from "../utils/request";
 import Mongo_client_Component from "@/lib/mongodb";
 import bcrypt from "bcrypt";
+import cookie from "cookie"
 
 /**
  * Register
@@ -20,14 +21,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(200).json({ ok: false, data: "User already exists" });
     }
     const hash = bcrypt.hashSync(password, 15);
+    const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
     const result = await collection.insertOne({
         username: username,
         password: hash,
-        token: null,
+        token: token,
+        expires: 60 * 60 * 24 * 7,
         download_queue: null,
         artists: null,
         playlist: null
     });
+
+    res.setHeader("Set-Cookie", cookie.serialize("token", token, {
+        sameSite: "strict",
+        maxAge: 60 * 60 * 24 * 7,
+        path: "/",
+        httpOnly: true,
+        secure: true
+    }))
 
     return res.status(200).json({ ok: true, data: result });
 }

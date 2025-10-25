@@ -1,3 +1,5 @@
+import { goto } from "@/lib/url";
+import login from "@/utils/user/login";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
@@ -40,8 +42,35 @@ export default function Signin({ seturl }: { seturl: (url: string) => void }) {
                     </span>
                 </span>
             </form>
-            <span>Forgot password?</span>
-            <button>Sign in</button>
+            <span
+                className="hover:cursor-pointer"
+                onClick={() => {
+                    alert("PLease contact with admin to reset password");
+                }}
+            >
+                Forgot password?
+            </span>
+            <button
+                className="hover:cursor-pointer"
+                onClick={async () => {
+                    if (username.length === 0) {
+                        alert("Please enter username");
+                        return;
+                    }
+                    if (password.length === 0) {
+                        alert("Please enter password");
+                        return;
+                    }
+                    const res = await login(username, password);
+                    if (res.ok) {
+                        localStorage.setItem("username", username);
+                        goto("/", seturl);
+                        window.location.href = "/";
+                    }
+                }}
+            >
+                Sign in
+            </button>
         </div>
     );
 }

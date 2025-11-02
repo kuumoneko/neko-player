@@ -24,11 +24,11 @@ export default function Home() {
     }
 
     if (url.includes("/playlists")) {
-        return <Playlist seturl={seturl} />;
+        return <Playlist url={url} seturl={seturl} />;
     }
 
     if (url.includes("/artists")) {
-        return <Artist seturl={seturl} />;
+        return <Artist url={url} seturl={seturl} />;
     }
 
     if (url.includes("/local")) {

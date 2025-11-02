@@ -1,7 +1,7 @@
-import artist from "@/utils/music/artist";
+import track from "@/utils/music/track";
 import { useEffect, useState } from "react";
 
-export default function Artist({
+export default function Tracks({
     url,
     seturl,
 }: {
@@ -12,7 +12,7 @@ export default function Artist({
     useEffect(() => {
         async function run() {
             const [source, id] = url.split("/").slice(2);
-            const result = await artist(source as "youtube" | "spotify", id);
+            const result = await track(source as "youtube" | "spotify", [id]);
             setlist(result.tracks);
         }
         run();

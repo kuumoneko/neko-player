@@ -27,10 +27,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         username: username,
         password: hash,
         token: token,
-        expires: 60 * 60 * 24 * 7,
         download_queue: null,
-        artists: null,
-        playlist: null
+        pin: null
     });
 
     res.setHeader("Set-Cookie", cookie.serialize("token", token, {

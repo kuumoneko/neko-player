@@ -24,8 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         username: username
     }, {
         $set: {
-            token: token,
-            expires: 60 * 60 * 24 * 7
+            token: token
         }
     });
     res.setHeader("Set-Cookie", cookie.serialize("token", token, {

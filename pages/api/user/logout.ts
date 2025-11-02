@@ -6,7 +6,7 @@ import bcrypt from "bcrypt"
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { username } = parse_body(req.body);
     const token = req.cookies.token ?? "";
-    console.log(token)
+    // console.log(token)
 
     const client = await Mongo_client_Component();
     const db = client.db("user");
@@ -14,20 +14,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     await client.connect();
     const ressult = await collection.find({
         username: username
+    }, {
+        projection: {
+            password: 1,
+            _id: 0,
+        }
     }).toArray();
     if (ressult.length === 0) {
         return res.status(200).json({ ok: false, data: "User not found" });
     }
     const user = ressult[0];
     if (token !== user.token) {
-        return res.status(200).json({ ok: false, data: "Unvalid token" })
+        return res.status(200).json({ ok: false, data: "Invalid token" })
     }
     await collection.updateOne({
         username: username
     }, {
         $set: {
-            token: null,
-            expires: null
+            token: null
         }
     });
     res.setHeader("Set-Cookie", "token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT");

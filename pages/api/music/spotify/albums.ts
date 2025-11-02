@@ -15,6 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(200).json({ ok: false, data: "No Id found" })
     }
     const player = Player.getInstance();
-    const result = await player.spotify.fetch_track(ids);
+
+    const result = await player.spotify.fetch_album(ids);
     return res.status(200).json({ ok: true, data: result });
 }

@@ -9,8 +9,8 @@ import bcrypt from "bcrypt";
 export default async function download(req: NextApiRequest, res: NextApiResponse) {
     const { username, password } = parse_body(req.body);
     const client = await Mongo_client_Component();
-    const db = client.db("neko-player");
-    const collection = db.collection('user');
+    const db = client.db("user");
+    const collection = db.collection('data');
     await client.connect();
     const ressult = await collection.find({
         username: username
@@ -23,6 +23,6 @@ export default async function download(req: NextApiRequest, res: NextApiResponse
         return res.status(200).json({ ok: false, data: "Password is incorrect" })
     }
     const download_queue = user.download_queue;
-    
+
 
 }

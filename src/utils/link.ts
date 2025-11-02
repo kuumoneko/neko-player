@@ -35,9 +35,9 @@ export default function convert_link(link: string) {
     }
     else {
         return {
-            source: "other",
-            mode: "",
-            id: "This is not a valid link"
+            source: undefined,
+            mode: undefined,
+            id: undefined
         };
     }
 }

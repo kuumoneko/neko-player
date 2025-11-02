@@ -1,28 +1,57 @@
 export interface Artist {
+    etag?: string,
     name: string,
     id: string,
     source: "youtube" | "spotify" | "local",
-    ids: string[],
-    thumbnail: string
+    tracks: Track[],
+    thumbnail: string,
+    playlistId: string
 }
 
 export interface Playlist {
+    etag?: string,
     name: string,
     id: string,
     source: "youtube" | "spotify" | "local",
-    ids: string[],
-    thumbnail: string
+    tracks?: Track[],
+    ids?: string[],
+    thumbnail: string,
+    duration: number
+}
+
+export interface Album {
+    etag?: string,
+    name: string,
+    id: string,
+    source: "youtube" | "spotify" | "local",
+    tracks: Track[],
+    thumbnail: string,
+    duration: number,
+    releaseDate: string,
+    artists: { id: string, name: string }[]
 }
 
 export interface Track {
+    etag?: string,
     name: string,
     id: string,
-    artist: string,
+    artist: { id: string, name: string }[],
     source: "youtube" | "spotify" | "local",
     thumbnail: string,
     duration: number,
-    releasedDate: string // DD-MM-YYYY
+    releasedDate: string // DD-MM-YYYY,
+    music_url: string | null
 }
+
+export interface Search {
+    query: string,
+    source: string,
+    type: "video" | "playlist" | "artist",
+    tracks: Track[],
+    playlists: Playlist[],
+    artists: Artist[]
+}
+
 
 export interface Playing_track {
     name: string,
@@ -38,13 +67,14 @@ export interface PlayingUrl {
     source: "youtube" | "spotify" | "local"
 }
 
-export interface youtube_api_key {
+export interface Api_key {
     key: string,
+    client_id?: string,
     isReached: boolean
+    when: number
 }
 
 export interface PlayerOption {
-    youtube_api_keys: youtube_api_key[],
-    spotify_api_key: string,
-    spotify_clientid: string
+    youtube_api_keys: Api_key[],
+    spotify_api_keys: Api_key[]
 }

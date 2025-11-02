@@ -10,7 +10,8 @@ export default function SearchBar({
     const [isAuth, setAuth] = useState(false);
 
     const [typing, settyping] = useState("");
-    const [source, setsource] = useState("");
+    const [source, setsource] = useState<"" | "youtube" | "spotify">("");
+    const [type, settype] = useState<"video" | "artist" | "playlist" | "">("");
 
     useEffect(() => {
         if (window.location.href.includes("auth")) {
@@ -19,11 +20,16 @@ export default function SearchBar({
     }, []);
 
     const search = () => {
-        if (typing === "") return;
+        if (typing === "") {
+            return;
+        }
         if (source === "") {
             return goto(`/${typing.split(":").join("/")}`, seturl);
         }
-        return goto(`/search/${source.toLocaleLowerCase()}/${typing}`, seturl);
+        return goto(
+            `/search/${source.toLocaleLowerCase()}/${type}/${typing}`,
+            seturl
+        );
     };
 
     if (isAuth) {
@@ -39,7 +45,7 @@ export default function SearchBar({
                 }
             }}
         >
-            <div className="w-full max-w-lg flex">
+            <div className="w-full max-w-[700px] flex">
                 <input
                     type="text"
                     className="grow px-5 py-3 rounded-l-full bg-slate-200 text-slate-700 text-base outline-none shadow-inner min-h-[30px]"
@@ -47,33 +53,61 @@ export default function SearchBar({
                     value={typing}
                     onChange={(e) => {
                         settyping(e.target.value);
-                        const link = convert_link(e.target.value);
+                        if (e.target.value === "") {
+                            setsource("");
+                            settype("");
+                            return;
+                        }
+                        const {
+                            source: sourcee,
+                            id,
+                            mode,
+                        } = convert_link(e.target.value);
                         if (
-                            link.source !== "spotify" &&
-                            link.source !== "youtube"
+                            sourcee === undefined ||
+                            mode === undefined ||
+                            id === undefined
                         ) {
-                            setsource(
-                                link.source === "youtube"
-                                    ? "Youtube"
-                                    : "Spotify"
-                            );
+                            if (source === "") {
+                                setsource("youtube");
+                            }
+
+                            if (type === "") {
+                                settype("video");
+                            }
                         } else {
                             setsource("");
-                            const { source, id, mode } = link;
+                            settype("");
                             settyping(`${mode}:${source}:${id}`);
                         }
                     }}
                 />
                 {source !== "" && (
                     <div
-                        className="px-5 py-2 bg-slate-200 ml-px text-slate-700 text-lg cursor-pointer flex items-center justify-center min-h-[30px] w-[100px]"
+                        className="px-5 py-2 bg-slate-200 ml-1 text-slate-700 text-lg cursor-pointer flex items-center justify-center min-h-[30px] w-[100px]"
                         onClick={() => {
                             setsource(
-                                source === "Youtube" ? "Spotify" : "Youtube"
+                                source === "youtube" ? "spotify" : "youtube"
                             );
                         }}
                     >
                         <span className="mt-[5%] h-full">{`${source}`}</span>
+                    </div>
+                )}
+                {type !== "" && (
+                    <div
+                        className="px-5 py-2 bg-slate-200 ml-1 text-slate-700 text-lg cursor-pointer flex items-center justify-center min-h-[30px] w-[100px]"
+                        onClick={() => {
+                            settype(
+                                type === "artist"
+                                    ? "playlist"
+                                    : type === "playlist"
+                                    ? "video"
+                                    : "artist"
+                            );
+                        }}
+                    >
+                        <span className="mt-[5%] h-full">{`${type}`}</span>
                     </div>
                 )}
                 <button

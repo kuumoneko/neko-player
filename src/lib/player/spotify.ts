@@ -21,7 +21,7 @@ export default class Spotify {
     async getdata(ids: string[]): Promise<Track[] | string> {
         try {
             const res = await mongo_spotify_tracks("GET", ids)
-            return res;
+            return res as any;
         }
         catch {
             return [] as unknown as Track[]

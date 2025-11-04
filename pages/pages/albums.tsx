@@ -3,22 +3,13 @@ import Top from "@/components/Show/components/top";
 import album from "@/utils/music/album";
 import { useEffect, useState } from "react";
 
-export default function Albums({
-    url,
-    seturl,
-}: {
-    url: string;
-    seturl: (url: string) => void;
-}) {
+export default function Albums() {
     const [dom, setdom] = useState(<></>);
     const run = async () => {
-        console.log(localStorage.getItem("url") as string);
         const [source, id] = ((localStorage.getItem("url") as string) ?? "/")
             .split("/")
             .slice(2);
-        console.log(source, id);
         const result = await album(source as "youtube" | "spotify", id);
-        console.log(result);
         setdom(
             <>
                 <Top

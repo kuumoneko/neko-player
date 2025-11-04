@@ -3,20 +3,12 @@ import Top from "@/components/Show/components/top";
 import playlist from "@/utils/music/playlist";
 import { useEffect, useState } from "react";
 
-export default function Playlist({
-    url,
-    seturl,
-}: {
-    url: string;
-    seturl: (url: string) => void;
-}) {
+export default function Playlist() {
     const [dom, setdom] = useState(<></>);
     const run = async () => {
-        console.log(localStorage.getItem("url") as string);
         const [source, id] = ((localStorage.getItem("url") as string) ?? "/")
             .split("/")
             .slice(2);
-        console.log(source, id);
         const result = await playlist(source as "youtube" | "spotify", id);
 
         setdom(

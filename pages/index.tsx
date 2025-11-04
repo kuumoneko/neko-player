@@ -26,11 +26,11 @@ export default function Home() {
     }
 
     if (url.includes("/playlists")) {
-        return <Playlist url={url} seturl={seturl} />;
+        return <Playlist />;
     }
 
     if (url.includes("/artists")) {
-        return <Artist url={url} seturl={seturl} />;
+        return <Artist />;
     }
 
     if (url.includes("/local")) {
@@ -38,11 +38,11 @@ export default function Home() {
     }
 
     if (url.includes("/albums")) {
-        return <Album url={url} seturl={seturl} />;
+        return <Album />;
     }
 
     if (url.includes("/tracks")) {
-        return <Tracks url={url} seturl={seturl} />;
+        return <Tracks />;
     }
 
     return <NotFound />;

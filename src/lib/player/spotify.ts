@@ -18,10 +18,13 @@ export default class Spotify {
         });
     }
 
-    async getdata(ids: string[]): Promise<Track[] | string> {
+    async getdata(ids: string[]): Promise<Track[] | "not Found" | "Invalid data"> {
         try {
             const res = await mongo_spotify_tracks("GET", ids)
-            return res as any;
+            if (typeof res === "string") {
+                throw new Error(res);
+            }
+            return res as Track[];
         }
         catch {
             return [] as unknown as Track[]

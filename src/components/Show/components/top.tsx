@@ -11,7 +11,6 @@ import { Track } from "../../../types";
 import formatDuration from "../../../utils/format";
 import Loading from "../../Loading";
 import { useEffect, useState } from "react";
-// import fetch_profile, { LocalStorageKeys } from "../../../utils/localStorage";
 import add_to_download from "@/utils/add_download";
 import fetch_profile, { LocalStorageKeys } from "@/utils/profile";
 
@@ -45,7 +44,7 @@ export default function Top({
                     (item: any) =>
                         item.id === id &&
                         item.source === source &&
-                        item.mode === mode
+                        item.type === mode
                 ) != -1
             ) {
                 setiSPin(true);
@@ -252,6 +251,15 @@ export default function Top({
                                                     url
                                                 );
                                             }
+                                        } else if (mode === "album") {
+                                            if (source === "spotify") {
+                                                const url =
+                                                    "https://open.spotify.com/album/" +
+                                                    id;
+                                                navigator.clipboard.writeText(
+                                                    url
+                                                );
+                                            }
                                         }
                                     }}
                                 >
@@ -300,6 +308,11 @@ export default function Top({
                                             setiSPin(!isPin);
                                             const temp = Array.from(
                                                 new Set(pin)
+                                            );
+                                            await fetch_profile(
+                                                "write",
+                                                LocalStorageKeys.pin,
+                                                temp
                                             );
                                         }
                                         run();

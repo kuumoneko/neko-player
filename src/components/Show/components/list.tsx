@@ -53,7 +53,6 @@ export default function List({
                 ).map((item: any) => JSON.parse(item));
             }
             const temp: any[] = list.slice(sight.head, sight.tail + 1) as any[];
-            console.log(temp);
             setlist(temp);
         }
         run();

@@ -26,7 +26,6 @@ export default function convert_link(link: string) {
     else if (link.includes("spot")) {
         let spotify_link = link.split(link.includes("?si=") ? "?si=" : "&si=")[0];
         const mode = spotify_link.includes("playlist") ? "playlists" : spotify_link.includes("track") ? "tracks" : "albums"
-        console.log(mode.slice(0, -1))
         spotify_link = spotify_link.split(`${mode.slice(0, -1)}/`)[1]
         return {
             source: "spotify",

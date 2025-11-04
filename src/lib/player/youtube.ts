@@ -1,5 +1,7 @@
 import { Playlist, Track, Api_key, Artist } from "@/types";
 import iso8601DurationToMilliseconds from "@/utils/time";
+import mongo_youtube_tracks from "../../../pages/api/mongodb/youtube/tracks";
+import mongo_youtube_playlists from "../../../pages/api/mongodb/youtube/playlists";
 
 function getNextResetTimestamp() {
     const now = new Date();
@@ -97,17 +99,34 @@ export default class Youtube {
         const temp = this.api_keys.filter((item: Api_key) => {
             return item.isReached === false
         })
-        return this.getRandomItem(temp).api_key
+        return this.getRandomItem(temp).key
     }
 
     async get_data(doc: "tracks" | "playlists" | "artists", ids: string[]) {
-        const res = await fetch("/api/mongodb/youtube/" + doc, { method: "GET", body: JSON.stringify({ ids: ids }) });
-        const data = await res.json();
-        return data.data;
+
+        let data = null;
+        if (doc === "tracks") {
+            data = await mongo_youtube_tracks("GET", ids)
+        }
+        else if (doc === "playlists") {
+            data = await mongo_youtube_playlists("GET", ids)
+        }
+        else if (doc === "artists") {
+            data = await mongo_youtube_tracks("GET", ids)
+        }
+        return data;
     }
 
     async write_data(doc: "tracks" | "playlists" | "artists", ids: string[], data: any) {
-        await fetch("/api/mongodb/youtube/" + doc, { method: "POST", body: JSON.stringify({ ids: ids, data: data }) });
+        if (doc === "tracks") {
+            await mongo_youtube_tracks("POST", ids, data)
+        }
+        else if (doc === "playlists") {
+            await mongo_youtube_playlists("POST", ids, data)
+        }
+        else if (doc === "artists") {
+            await mongo_youtube_tracks("POST", ids, data)
+        }
     }
 
     async fetch_data(
@@ -140,25 +159,44 @@ export default class Youtube {
                 throw new Error("Not found")
             }
             else {
-                data = await response.json();
-
-                if (data.error && data.error.errors[0].reason === "quotaExceeded") {
-                    const temp = this.api_keys;
-                    const indexx = temp.findIndex((item: Api_key) => {
-                        return item.key === key;
-                    })
-                    temp[indexx] = {
-                        key: temp[indexx].key,
-                        isReached: true,
-                        when: getNextResetTimestamp()
+                try {
+                    data = await response.text();
+                    if (data.length === 0) {
+                        data = null;
+                        done = true;
+                    } else {
+                        try {
+                            data = JSON.parse(data)
+                            // console.log(data)
+                        }
+                        catch (e) {
+                            console.log(e)
+                            // console.log(`${url}&key=${key}`)
+                            // console.log(data)
+                        }
+                        if (data?.error && data?.error?.errors[0].reason === "quotaExceeded") {
+                            const temp = this.api_keys;
+                            const indexx = temp.findIndex((item: Api_key) => {
+                                return item.key === key;
+                            })
+                            temp[indexx] = {
+                                key: temp[indexx].key,
+                                isReached: true,
+                                when: getNextResetTimestamp()
+                            }
+                            this.api_keys = temp;
+                        }
+                        else if (data?.error === null || data?.error === undefined) {
+                            done = true;
+                        }
+                        else {
+                            throw new Error(data?.error ?? "")
+                        }
                     }
-                    this.api_keys = temp;
                 }
-                else if (data.error === null || data.error === undefined) {
-                    done = true;
-                }
-                else {
-                    throw new Error(data.error)
+                catch (e) {
+                    console.log("error")
+                    console.log(e)
                 }
             }
         }
@@ -179,14 +217,13 @@ export default class Youtube {
     async fetch_track(ids: string[]): Promise<Track[]> {
         try {
             ids = Array.from(new Set([...ids]));
-            const tracks: Track[] = await this.get_data("tracks", ids);
-
+            const tracks: Track[] = await this.get_data("tracks", ids) as Track[];
             const tracks_in_database: Track[] = tracks.filter(
                 (item: {
                     name: string,
                     id: string
                 }) => {
-                    return item.name === undefined
+                    return item.name !== undefined
                 })
 
             const tracks_out_database = tracks.filter(
@@ -207,7 +244,7 @@ export default class Youtube {
                 const url = `${this.create_end_point(endpoints[EndPoints.Videos])}`;
 
                 while (st <= tracks_out_database.length - 1) {
-                    const endpoint = url + `&id=${tracks_out_database.slice(st, ed + 1).join("%2C")}`
+                    const endpoint = url + `&id=${tracks_out_database.map((item: any) => item.id).slice(st, ed + 1).join("%2C")}`
                     const data: any = await this.fetch_data(endpoint);
                     for (const item of data.items) {
 
@@ -237,9 +274,13 @@ export default class Youtube {
             }
 
             const res = [...tracks_in_database, ...temp_tracks]
+            if (temp_tracks.length > 0) {
+                this.write_data("tracks", tracks_out_database.map((item: any) => item.id), temp_tracks)
+            }
             return res;
         }
         catch (e: any) {
+            console.error(e)
             throw new Error(e.message);
         }
     }
@@ -248,10 +289,10 @@ export default class Youtube {
         return new Promise(async (resolve, reject) => {
             const tracks: string[] = [];
             const url = `${this.create_end_point(endpoints[EndPoints.PlaylistItem])}&maxResults=${this.maxResults}&playlistId=${id}`;
-            let this_playlist = await this.get_data("playlists", [id]) as unknown as Playlist ?? { ids: [] };
+            let this_playlist = (await this.get_data("playlists", [id]) as any)[0] as unknown as Playlist ?? { ids: [] };
             try {
                 let thumbnail: string = "";
-                if (this_playlist && ((this_playlist.ids as string[]).length) > 0) {
+                if (this_playlist && ((this_playlist.ids as string[] ?? []).length) > 0) {
                     const tracks = await this.fetch_track(this_playlist.ids as string[]);
                     resolve({
                         source: "youtube",
@@ -270,6 +311,7 @@ export default class Youtube {
                 } else {
                     return;
                 }
+                resolve({} as any)
                 let etag = (this_playlist?.etag && this_playlist?.etag?.length > 0) ? this_playlist?.etag : undefined;
                 let done = false;
                 while (!done && pagetoken !== undefined && pagetoken !== null) {
@@ -288,7 +330,7 @@ export default class Youtube {
                     }
 
                     if (pagetoken === "") {
-                        etag = video.etag
+                        etag = video?.etag ?? ""
                     }
 
                     if (thumbnail === "") {
@@ -304,20 +346,19 @@ export default class Youtube {
                         etag: etag ?? "",
                         thumbnail: thumbnail,
                         name: this_playlist.name ?? await this.fetch_playlist_name(id),
-                        ids: Array.from(new Set([...tracks, ...this_playlist.ids as []])),
+                        ids: Array.from(new Set([...tracks, ...this_playlist.ids as [] ?? []])),
                         id: id,
                         source: "youtube",
                         duration: 0
                     }
-                    // this.writedata("playlist", id, this_playlist)
                     pagetoken = video.nextPageToken
                 }
                 this.running = this.running.filter((item: { name: string }) => { return item.name !== `playlist:${id}` })
-
+                this.write_data("playlists", [id], [this_playlist]);
             }
             catch (e) {
                 this.running = this.running.filter((item: { name: string }) => { return item.name !== `playlist:${id}` })
-                // throw new Error(e)
+                console.error(e)
             }
         })
     }
@@ -446,7 +487,7 @@ export default class Youtube {
         } else {
             return null as unknown as Artist;
         }
-        let this_artist = await this.get_data("artists", [id]);
+        let this_artist = (await this.get_data("artists", [id]) as Artist[])[0] ?? {};
         try {
             let etag = (this_artist?.etag && this_artist.etag?.length > 0) ? this_artist?.etag : undefined
             const url = `${this.create_end_point(endpoints[EndPoints.Artist])}&id=${id}`;
@@ -459,10 +500,10 @@ export default class Youtube {
                 }
                 const playlist = await this.fetch_playlist(playlist_id)
                 const artist_tracks = playlist.tracks as Track[];
-                this.write_data("artists", [id], {
+                this.write_data("artists", [id], [{
                     ...this_artist,
                     playlistId: playlist_id
-                });
+                }]);
                 this.running = this.running.filter((item: { name: string }) => { return item.name !== `artist:${id}` })
 
                 return {
@@ -480,13 +521,16 @@ export default class Youtube {
             const artist_playlist = await this.fetch_playlist(playlist_id)
             const artist_tracks = artist_playlist.tracks as Track[];
             this_artist = {
+                source: "youtube",
                 etag: etag,
+                id: id,
                 name: itemm.snippet.title,
                 thumbnail: itemm.snippet?.thumbnails?.default?.url || "",
-                videoCount: itemm.statistics.videoCount,
-                playlistId: playlist_id
+                // videoCount: itemm.statistics.videoCount,
+                playlistId: playlist_id,
+                tracks: []
             }
-            this.write_data("artists", [id], this_artist);
+            this.write_data("artists", [id], [this_artist]);
             this.running = this.running.filter((item: { name: string }) => { return item.name !== `artist:${id}` })
 
             return {
@@ -548,7 +592,7 @@ export default class Youtube {
                 }
             }
 
-            this.write_data("artists", [id], this_artist);
+            this.write_data("artists", [id], [this_artist]);
             return playlistId;
         }
 
@@ -587,7 +631,7 @@ export default class Youtube {
                     this_playlist.ids = ids;
                     this_playlist.etag = videos.etag;
                     // this_playlist.length = TotalResult;
-                    this.write_data("playlists", [id], this_playlist);
+                    this.write_data("playlists", [id], [this_playlist]);
                 }
             }
             // new_tracks[id] = this_new_tracks;

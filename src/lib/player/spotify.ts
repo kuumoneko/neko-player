@@ -2,6 +2,7 @@ import { Buffer } from "node:buffer"
 
 import { Album, Api_key, Artist, Playlist, Search, Track } from "@/types";
 import Mongo_client_Component from "../mongodb";
+import mongo_spotify_tracks from "../../../pages/api/mongodb/spotify/tracks";
 
 interface Spotify_Key { key: string, client_id: string, token: string, isReached: boolean, when: number }
 export default class Spotify {
@@ -17,11 +18,10 @@ export default class Spotify {
         });
     }
 
-    async getdata(ids: string[]): Promise<Track[]> {
+    async getdata(ids: string[]): Promise<Track[] | string> {
         try {
-            const res = await fetch("/api/mongodb/spotify/tracks", { method: "GET", body: JSON.stringify({ ids: ids }) });
-            const data = await res.json();
-            return data.data;
+            const res = await mongo_spotify_tracks("GET", ids)
+            return res;
         }
         catch {
             return [] as unknown as Track[]
@@ -30,12 +30,7 @@ export default class Spotify {
 
     async writedata(ids: string[], data: any) {
         try {
-            const res = await fetch("/api/mongodb/spotify/tracks", {
-                method: "POST", body: JSON.stringify({
-                    ids: ids,
-                    data: data
-                })
-            })
+            await mongo_spotify_tracks("POST", ids, data)
         }
         catch {
             return undefined
@@ -243,7 +238,11 @@ export default class Spotify {
     async fetch_track(ids: string[] = []): Promise<Track[]> {
         const url = `https://api.spotify.com/v1/tracks`;
         try {
-            const database: Track[] = await this.getdata(ids);
+            let database: Track[] = await this.getdata(ids) as Track[];
+            if (typeof database === "string") {
+                console.error(database);
+                database = []
+            }
 
             const onDatabase = database.filter((item: any) => {
                 return (item.name ?? undefined) !== undefined

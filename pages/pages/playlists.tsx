@@ -12,7 +12,11 @@ export default function Playlist({
 }) {
     const [dom, setdom] = useState(<></>);
     const run = async () => {
-        const [source, id] = url.split("/").slice(2);
+        console.log(localStorage.getItem("url") as string);
+        const [source, id] = ((localStorage.getItem("url") as string) ?? "/")
+            .split("/")
+            .slice(2);
+        console.log(source, id);
         const result = await playlist(source as "youtube" | "spotify", id);
 
         setdom(

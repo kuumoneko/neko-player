@@ -5,6 +5,8 @@ import Search from "./pages/search";
 import Playlist from "./pages/playlists";
 import Artist from "./pages/artists";
 import Local from "./pages/local";
+import Album from "./pages/albums";
+import Tracks from "./pages/tracks";
 
 export default function Home() {
     const [url, seturl] = useState("/");
@@ -33,6 +35,14 @@ export default function Home() {
 
     if (url.includes("/local")) {
         return <Local seturl={seturl} />;
+    }
+
+    if (url.includes("/albums")) {
+        return <Album url={url} seturl={seturl} />;
+    }
+
+    if (url.includes("/tracks")) {
+        return <Tracks url={url} seturl={seturl} />;
     }
 
     return <NotFound />;

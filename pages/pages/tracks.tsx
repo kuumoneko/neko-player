@@ -14,6 +14,7 @@ export default function Tracks({
             const [source, id] = url.split("/").slice(2);
             const result = await track(source as "youtube" | "spotify", [id]);
             setlist(result.tracks);
+            console.log(result);
         }
         run();
     }, [url]);

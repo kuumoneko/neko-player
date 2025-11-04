@@ -1,10 +1,17 @@
-import { faShare } from "@fortawesome/free-solid-svg-icons";
+import {
+    faDownload,
+    faListDots,
+    faShare,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import formatDuration from "@/utils/music/formatDuration";
 import Loading from "@/components/Loading";
 import Play from "../Show/common/play";
 import { useEffect, useState } from "react";
 import { goto } from "@/lib/url";
+import { Track } from "@/types";
+import Queue from "../Show/common/queue";
+import download from "../Show/common/download";
 
 export default function List({
     list,
@@ -24,7 +31,7 @@ export default function List({
         return <Loading mode={"Searching"} />;
     }
 
-    const max_items = 18; // 6 rows * 3 cols
+    const max_items = 15; // 5 rows * 3 cols
 
     const [sight, set_sight] = useState({
         head: 0,
@@ -50,7 +57,7 @@ export default function List({
 
     return (
         <div
-            className="listitem flex flex-col h-full w-full overflow-y-scroll [&::-webkit-scrollbar]:hidden"
+            className="listitem flex flex-col h-[75%] w-full overflow-y-scroll [&::-webkit-scrollbar]:hidden"
             onWheel={(e) => {
                 const direction = e.deltaY > 0 ? "down" : "up";
                 const temp = sight;
@@ -72,7 +79,7 @@ export default function List({
             }}
         >
             <div className="item h-full grid grid-cols-3">
-                {show_list.map((item: any, index: number) => {
+                {show_list.map((item: Track, index: number) => {
                     return (
                         <div
                             key={
@@ -80,7 +87,7 @@ export default function List({
                             }
                             className={`vid_${
                                 index + 1
-                            } flex h-[95px] w-full flex-row items-center justify-between mb-5 bg-slate-700 hover:bg-slate-600 rounded-lg`}
+                            } flex h-[95px] w-[95%] flex-row items-center justify-between mb-5 bg-slate-700 hover:bg-slate-600 rounded-lg`}
                             onDoubleClick={() => {
                                 if (type === "video") {
                                     Play(item, source, mode, id, list);
@@ -110,7 +117,7 @@ export default function List({
                                 <div className="flex flex-col ml-2.5 w-[80%]">
                                     <span className="title cursor-default select-none">
                                         {remove_hashtag(
-                                            (item.track?.name?.slice(
+                                            (item.name?.slice(
                                                 0,
                                                 50
                                             ) as string) ??
@@ -119,19 +126,18 @@ export default function List({
                                         )}
                                     </span>
                                     <span className="artists cursor-default select-none">
-                                        {item.artists
+                                        {item.artist
                                             ?.map((artist: any) => artist.name)
                                             .join(", ")}
                                     </span>
                                     <div className="flex flex-row items-center justify-between">
                                         <div>
                                             <span className="releaseDate cursor-default select-none">
-                                                {item.track?.releaseDate || ""}
+                                                {item.releasedDate || ""}
                                             </span>
                                             <span className="duration cursor-default select-none ml-[15px]">
                                                 {formatDuration(
-                                                    (item.track
-                                                        ?.duration as number) /
+                                                    (item.duration as number) /
                                                         1000
                                                 ) || ""}
                                             </span>
@@ -143,14 +149,14 @@ export default function List({
                                                     if (source === "youtube") {
                                                         const url =
                                                             "https://www.youtube.com/watch?v=" +
-                                                            item.track?.id;
+                                                            item.id;
                                                         navigator.clipboard.writeText(
                                                             url
                                                         );
                                                     } else {
                                                         const url =
                                                             "https://open.spotify.com/track/" +
-                                                            item.track?.id;
+                                                            item.id;
                                                         navigator.clipboard.writeText(
                                                             url
                                                         );
@@ -161,8 +167,8 @@ export default function List({
                                                     icon={faShare}
                                                 />
                                             </span>
-                                            {/* <span
-                                                className="mr-[10px]"
+                                            <span
+                                                className="mr-2.5"
                                                 onClick={() => {
                                                     Queue(item, source);
                                                 }}
@@ -171,8 +177,8 @@ export default function List({
                                                     icon={faListDots}
                                                 />
                                             </span>
-                                            <span
-                                                className={`mr-[10px] ${
+                                            {/* <span
+                                                className={`mr-2.5 ${
                                                     mode === "local"
                                                         ? "opacity-50 pointer-events-none"
                                                         : ""

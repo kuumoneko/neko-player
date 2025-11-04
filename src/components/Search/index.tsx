@@ -78,7 +78,7 @@ export default function SearchBar({
                         } else {
                             setsource("");
                             settype("");
-                            settyping(`${mode}:${source}:${id}`);
+                            settyping(`${mode}:${sourcee}:${id}`);
                         }
                     }}
                 />

@@ -99,7 +99,7 @@ export default function List({
                             }
                             className={`vid_${
                                 index + 1
-                            } flex h-[95px] w-full flex-row items-center justify-between mb-5 bg-slate-700 hover:bg-slate-600 rounded-lg`}
+                            } flex h-[95px] w-[95%] flex-row items-center justify-between mb-5 bg-slate-700 hover:bg-slate-600 rounded-lg`}
                             onDoubleClick={() => {
                                 Play(item, source, mode, id, list);
                             }}

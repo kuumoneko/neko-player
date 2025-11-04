@@ -58,7 +58,7 @@ export default function Top({
     return (
         <>
             {name !== null && duration !== null ? (
-                <div className="flex flex-col mt-5 w-[90%] mb-[15px]">
+                <div className="flex flex-col w-[90%] mb-[15px] items-center justify-center">
                     <div className="flex flex-row items-center select-none cursor-default">
                         <span>
                             {thumbnail ? (
@@ -281,6 +281,7 @@ export default function Top({
                                                 "get",
                                                 LocalStorageKeys.pin
                                             );
+                                            console.log(pin);
                                             if (isPin) {
                                                 pin = pin.filter(
                                                     (item: any) => {

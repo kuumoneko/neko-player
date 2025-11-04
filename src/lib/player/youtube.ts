@@ -2,6 +2,7 @@ import { Playlist, Track, Api_key, Artist } from "@/types";
 import iso8601DurationToMilliseconds from "@/utils/time";
 import mongo_youtube_tracks from "../../../pages/api/mongodb/youtube/tracks";
 import mongo_youtube_playlists from "../../../pages/api/mongodb/youtube/playlists";
+import mongo_youtube_artists from "../../../pages/api/mongodb/youtube/artists";
 
 function getNextResetTimestamp() {
     const now = new Date();
@@ -112,7 +113,7 @@ export default class Youtube {
             data = await mongo_youtube_playlists("GET", ids)
         }
         else if (doc === "artists") {
-            data = await mongo_youtube_tracks("GET", ids)
+            data = await mongo_youtube_artists("GET", ids)
         }
         return data;
     }
@@ -125,7 +126,7 @@ export default class Youtube {
             await mongo_youtube_playlists("POST", ids, data)
         }
         else if (doc === "artists") {
-            await mongo_youtube_tracks("POST", ids, data)
+            await mongo_youtube_artists("POST", ids, data)
         }
     }
 

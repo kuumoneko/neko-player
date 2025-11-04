@@ -8,9 +8,7 @@ export default async function mongo_youtube_artists(mode: "GET" | "POST", ids: s
 
     if (mode === "GET") {
         let results: any[] = await collection.find({ id: { $in: ids } }).toArray()
-        if (results.length === 0) {
-            return "not Found"
-        }
+
         return results
     }
     else {
@@ -21,7 +19,8 @@ export default async function mongo_youtube_artists(mode: "GET" | "POST", ids: s
             return {
                 updateOne: {
                     filter: { id: item.id },
-                    update: { $set: { ...item } }
+                    update: { $set: { ...item } },
+                    upsert: true
                 }
             }
         }));

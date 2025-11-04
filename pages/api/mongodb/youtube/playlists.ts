@@ -7,9 +7,7 @@ export default async function mongo_youtube_playlists(mode: "GET" | "POST", ids:
     await client.connect();
     if (mode === "GET") {
         let results: any[] = await collection.find({ id: { $in: ids } }).toArray()
-        if (results.length === 0) {
-            return "not Found"
-        }
+
         return results
     }
     else {
@@ -20,7 +18,8 @@ export default async function mongo_youtube_playlists(mode: "GET" | "POST", ids:
             return {
                 updateOne: {
                     filter: { id: item.id },
-                    update: { $set: { ...item } }
+                    update: { $set: { ...item } },
+                    upsert: true
                 }
             }
         }));

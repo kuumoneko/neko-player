@@ -20,7 +20,7 @@ export default class Spotify {
 
     async getdata(ids: string[]): Promise<Track[] | "not Found" | "Invalid data"> {
         try {
-            const res = await mongo_spotify_tracks("GET", ids)
+            const res = await mongo_spotify_tracks("GET", ids);
             if (typeof res === "string") {
                 throw new Error(res);
             }
@@ -66,7 +66,6 @@ export default class Spotify {
             const max_retry = 10;
             let time = 0;
             const token = await this.chose_api_key();
-            console.log(token)
             let done = false;
             while (!done) {
                 if (time >= max_retry) {
@@ -202,21 +201,19 @@ export default class Spotify {
                     .map((item: any) => {
                         duration += item.track.duration_ms;
                         return {
-                            type: "spotify:track",
+                            source: "spotify",
                             thumbnail: item.track.album.images[item.track.album.images.length - 1]?.url || null,
-                            artists: item.track.artists.map((artist: any) => {
+                            artist: item.track.artists.map((artist: any) => {
                                 return {
                                     name: artist.name,
                                     id: artist.id
                                 }
                             }),
-                            track: {
-                                name: item.track.name,
-                                id: item.track.id,
-                                duration: item.track.duration_ms,
-                                releaseDate: item.track.album.release_date,
-                            }
-                        }
+                            name: item.track.name,
+                            id: item.track.id,
+                            duration: item.track.duration_ms,
+                            releasedDate: item.track.album.release_date,
+                        } as Track
                     }))
                 url = video?.tracks?.next || undefined;
             }
@@ -281,6 +278,11 @@ export default class Spotify {
                     })
                     this.writedata(track_data.tracks.map((item: Track) => item.id), temp)
                     onDatabase.push(...temp)
+                    st += 50;
+                    ed += 50;
+                    if (ed > notOnDatabase.length - 1) {
+                        ed = notOnDatabase.length - 1;
+                    }
                 }
 
             }

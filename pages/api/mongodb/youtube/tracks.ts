@@ -7,11 +7,13 @@ export default async function mongo_youtube_tracks(mode: "GET" | "POST", ids: st
     await client.connect();
 
     if (mode === "GET") {
-        let results: any[] = await collection.find({ id: { $in: ids } }).toArray()
-        if (results.length === 0) {
-            return "not Found"
-        }
-        return results
+        let results: any[] = await collection.find({ id: { $in: ids } }).toArray();
+        return ids.map((id: string) => {
+            const temp = results.find((result: any) => {
+                return result.id === id
+            }) ?? { id: id, name: undefined };
+            return temp;
+        })
     }
     else {
         if (!data) {
@@ -21,7 +23,8 @@ export default async function mongo_youtube_tracks(mode: "GET" | "POST", ids: st
             return {
                 updateOne: {
                     filter: { id: item.id },
-                    update: { $set: { ...item } }
+                    update: { $set: { ...item } },
+                    upsert: true
                 }
             }
         }));

@@ -68,7 +68,6 @@ export default function Register({
                     }
 
                     const res = await register(username, password);
-                    // console.log(res);
                     if (res.ok) {
                         localStorage.setItem("usernname", username);
                         goto("/", seturl);

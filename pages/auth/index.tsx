@@ -14,7 +14,7 @@ export default function Auth() {
     };
 
     return (
-        <div className="flex items-center justify-center h-full bg-gray-900">
+        <div className="flex items-center justify-center h-full w-full bg-gray-900">
             <div className="form flex flex-row h-3/4 w-1/2">
                 <div className="Signin h-full w-1/2 bg-slate-700 rounded-l-4xl p-4">
                     <Signin seturl={seturl} />

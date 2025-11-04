@@ -3,6 +3,7 @@ import { parse_body } from "../utils/request";
 import Mongo_client_Component from "@/lib/mongodb";
 import bcrypt from "bcrypt"
 import cookie from "cookie"
+import { revert } from "@/lib/pass";
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { username, password } = parse_body(req.body);
     const client = await Mongo_client_Component();
@@ -16,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(200).json({ ok: false, data: "User not found" });
     }
     const user = ressult[0];
-    if (!bcrypt.compareSync(password, user.password)) {
+    if (!bcrypt.compareSync(revert(password), user.password)) {
         return res.status(200).json({ ok: false, data: "Password is incorrect" })
     }
     const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);

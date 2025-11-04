@@ -17,7 +17,9 @@ export default function Template({ children }: { children: React.ReactNode }) {
             <div className="w-full h-[85%]">
                 <div className="h-[5%] bg-slate-900"></div>
                 <SearchBar seturl={seturl} />
-                <div className="h-[90%]">{children}</div>
+                <div className="h-[90%] flex flex-col items-center justify-center">
+                    {children}
+                </div>
             </div>
             <Player seturl={seturl} />
         </div>

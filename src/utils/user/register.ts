@@ -1,8 +1,10 @@
+import { convert } from "@/lib/pass"
+
 export default async function register(username: string, password: string) {
     const result = await fetch("/api/user/signup", {
         method: "POST",
         body: JSON.stringify({
-            username, password
+            username, password: convert(password)
         })
     })
 

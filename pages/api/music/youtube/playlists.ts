@@ -3,7 +3,7 @@ import { parse_body } from "../../utils/request";
 import Player from "@/lib/player";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    if (!["GET"].includes(req.method ?? "")) {
+    if (!["POST"].includes(req.method ?? "")) {
         return res.status(200).json({
             ok: false,
             data: "Method not allowed"

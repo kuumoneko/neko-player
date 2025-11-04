@@ -14,20 +14,15 @@ export default function Tracks() {
         setdom(
             <>
                 <Top
-                    name={result.name}
-                    thumbnail={result.thumbnail}
-                    duration={result.duration}
+                    name={result[0].name}
+                    thumbnail={result[0].thumbnail}
+                    duration={result[0].duration}
                     source={source}
                     id={id}
                     mode="track"
-                    playlist={result.tracks}
+                    playlist={result}
                 />
-                <List
-                    list={result.tracks}
-                    source={source}
-                    id={id}
-                    mode="track"
-                />
+                <List list={result} source={source} id={id} mode="track" />
             </>
         );
     };

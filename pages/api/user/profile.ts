@@ -3,7 +3,13 @@ import { parse_body } from "../utils/request";
 import Mongo_client_Component from "@/lib/mongodb";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    const { username, id, key } = parse_body(req.body);
+    if (!["POST"].includes(req.method ?? "")) {
+        return res.status(200).json({
+            ok: false,
+            data: "Method not allowed"
+        })
+    }
+    const { mode, id, key, data } = parse_body(req.body);
     const token = req.cookies.token ?? "";
     const client = await Mongo_client_Component();
     const db = client.db("user");
@@ -17,13 +23,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(200).json({ ok: false, data: "Invalid token" })
     }
 
-    const data = (await collection.find({ id: id }, {
-        projection: {
-            [key]: 1,
-            _id: 0
-        }
-    }).toArray())[0][key] ?? []
+    if (mode === "get") {
+        const data = (await collection.find({ id: id }, {
+            projection: {
+                [key]: 1,
+                _id: 0
+            }
+        }).toArray())[0][key] ?? []
 
 
-    return res.status(200).json({ ok: true, data: data ?? [] })
+        return res.status(200).json({ ok: true, data: data ?? [] })
+    }
+    else {
+        const result = await collection.updateOne({ id: id }, {
+            $set: {
+                [key]: typeof data === "string" ? JSON.parse(data) : data
+            }
+        })
+        return res.status(200).json({ ok: true, data: result })
+    }
 }

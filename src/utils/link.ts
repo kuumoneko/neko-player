@@ -18,7 +18,7 @@ export default function convert_link(link: string) {
         }
         return {
             source: "youtube",
-            mode: temp.length > 20 ? "playlist" : "track",
+            mode: temp.length > 20 ? "playlists" : "tracks",
             id: temp
         }
     }

@@ -1,40 +1,29 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { parse_body } from "../../utils/request";
 import Mongo_client_Component from "@/lib/mongodb";
-import { Track } from "@/types";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    if (!["POST", "GET"].includes(req.method ?? "")) {
-        return res.status(200).json({
-            ok: false,
-            data: "Method not allowed"
-        })
-    }
-    const { ids = [''], data = [] }: { all: boolean, ids: string[], data: Track[] } = parse_body(req.body);
+export default async function mongo_youtube_playlists(mode: "GET" | "POST", ids: string[], data?: any[]) {
     const client = await Mongo_client_Component();
     const db = client.db("youtube");
     const collection = db.collection('playlists');
     await client.connect();
-
-    if (req.method === "GET") {
-        let results: any[] = []
-        for (const id of ids) {
-            results.push(await collection.findOne({ id: id }) ?? {
-                id: id,
-                name: undefined
-            });
-        }
+    if (mode === "GET") {
+        let results: any[] = await collection.find({ id: { $in: ids } }).toArray()
         if (results.length === 0) {
-            return res.status(200).json({ ok: false, data: `Not found` });
+            return "not Found"
         }
-        return res.status(200).json({ ok: true, data: results });
+        return results
     }
     else {
-        const result = []
-        for (const item of data) {
-            const temp = await collection.updateOne({ id: item.id }, item, { upsert: true });
-            result.push(temp)
+        if (!data) {
+            return "Invalid data"
         }
-        return res.status(200).json({ ok: true, data: result });
+        const result = await collection.bulkWrite(data.map((item: any) => {
+            return {
+                updateOne: {
+                    filter: { id: item.id },
+                    update: { $set: { ...item } }
+                }
+            }
+        }));
+        return result
     }
 }

@@ -1,8 +1,23 @@
 import { Api_key, Track } from "@/types";
 import Spotify from "./player/spotify";
 import Youtube from "./player/youtube";
-import Innertube, { ClientType } from "youtubei.js";
+import Innertube, { Platform, Types, ClientType } from "youtubei.js";
 
+Platform.shim.eval = async (data: Types.BuildScriptResult, env: Record<string, Types.VMPrimative>) => {
+    const properties = [];
+
+    if (env.n) {
+        properties.push(`n: exportedVars.nFunction("${env.n}")`)
+    }
+
+    if (env.sig) {
+        properties.push(`sig: exportedVars.sigFunction("${env.sig}")`)
+    }
+
+    const code = `${data.output}\nreturn { ${properties.join(', ')} }`;
+
+    return new Function(code)();
+}
 
 export default class Player {
     private static instance: Player;
@@ -172,7 +187,7 @@ export default class Player {
                 database = {
                     thumbnail: trackToMatch.thumbnail,
                     artists: trackToMatch.artist,
-                    music_url: database || null,
+                    music_url: database.music_url ?? null,
                     matched: bestMatch?.id,
                     name: trackToMatch.name,
                     duration: trackToMatch.duration,

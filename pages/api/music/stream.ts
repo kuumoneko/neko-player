@@ -1,8 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { parse_body } from '../utils/request';
 import Player from '@/lib/player';
-import ytb from "./youtube/tracks"
-import spt from "./spotify/tracks"
 import { Track } from '@/types';
 import Mongo_client_Component from '@/lib/mongodb';
 
@@ -36,17 +34,15 @@ export default async function hendler(req: NextApiRequest, res: NextApiResponse)
     if (source === "youtube") {
         musicId = id;
     } else {
-        const tracks = await player.spotify.fetch_track([id]);
-        const findYtbTrack = await player.findMatchingVideo(tracks[0]);
+        // const tracks = await player.spotify.fetch_track([id]);
+        const findYtbTrack = await player.findMatchingVideo(track);
         if (!findYtbTrack) {
             return res.status(200).json({ ok: false, data: "Music not found" })
         }
 
         musicId = findYtbTrack.id ?? "";
     }
-
     const bestAudio = await player.getAudioURLAlternative(musicId);
-
     const temp = {
         ...track,
         music_url: bestAudio
@@ -57,6 +53,6 @@ export default async function hendler(req: NextApiRequest, res: NextApiResponse)
     const collection = db.collection('tracks');
     await client.connect();
 
-    collection.updateOne({ id: id }, temp, { upsert: true });
+    collection.updateOne({ id: id }, { $set: { ...temp } }, { upsert: true });
     res.status(200).json({ ok: true, data: bestAudio })
 }

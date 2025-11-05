@@ -5,6 +5,7 @@ import {
     MutableRefObject,
     RefObject,
 } from "react";
+// import { fetch_data, Data } from "@/utils/fetch";
 import { sleep_types } from "../../common/types/index.ts";
 import {
     faShuffle,
@@ -15,10 +16,12 @@ import {
     faRepeat,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import formatDuration from "@/utils/format";
-import Slider from "../../common/Slider";
+import formatDuration from "../../../../utils/format.ts";
+import Slider from "../../common/Slider/index.tsx";
 import backward from "./common/backward.ts";
 import forward from "./common/forward.ts";
+import fetch_profile, { LocalStorageKeys } from "@/utils/profile.ts";
+import stream from "@/utils/music/stream.ts";
 
 const handleCloseTab = () => {
     try {
@@ -36,7 +39,7 @@ const handleCloseTab = () => {
 export default function ControlUI({
     audioRef,
 }: {
-    audioRef: MutableRefObject<HTMLAudioElement>;
+    audioRef: RefObject<HTMLAudioElement>;
 }) {
     const [played, setplayed] = useState(false);
     const [shuffle, setshuffle] = useState(
@@ -61,15 +64,12 @@ export default function ControlUI({
         try {
             setisloading(true);
 
-            const data: { url: string } = await fetch(`/api/music/stream`, {
-                method: "POST",
-                body: JSON.stringify({ source: source, id: id }),
-            });
+            let data = await stream(source as "youtube" | "spotify", id);
 
             if (source === "local") {
                 const audio_format = id.split(".")[id.split(".").length - 1];
 
-                const byteCharacters = atob(data.url);
+                const byteCharacters = atob(data);
                 const byteArrays: any = [];
 
                 for (let i = 0; i < byteCharacters.length; i += 1024) {
@@ -87,7 +87,7 @@ export default function ControlUI({
 
                 const blobUrl = URL.createObjectURL(blob);
 
-                data.url = blobUrl;
+                data = blobUrl;
             }
 
             setplayed(false);
@@ -430,9 +430,7 @@ export default function ControlUI({
                 <Slider
                     name={"time"}
                     width={"800"}
-                    reff={
-                        TimeSliderRef as unknown as RefObject<HTMLInputElement>
-                    }
+                    reff={TimeSliderRef as RefObject<HTMLInputElement>}
                     value={Time}
                     Change={(e: React.ChangeEvent<HTMLInputElement>) => {
                         const newTime = Number(e.target.value);

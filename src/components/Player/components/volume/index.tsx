@@ -4,7 +4,7 @@ import Slider from "../../common/Slider/index.tsx";
 export default function VolumeUI({
     audioRef,
 }: {
-    audioRef: React.MutableRefObject<HTMLAudioElement>;
+    audioRef: RefObject<HTMLAudioElement>;
 }) {
     const [volume, setvolume] = useState(() =>
         Number(localStorage.getItem("volume") || 50)
@@ -32,7 +32,7 @@ export default function VolumeUI({
             <Slider
                 name={"volume"}
                 width={"100"}
-                reff={volumeSliderRef as unknown as RefObject<HTMLInputElement>}
+                reff={volumeSliderRef as RefObject<HTMLInputElement>}
                 value={volume}
                 Change={(e) => {
                     const newVolume = Number(e.target.value);

@@ -14,21 +14,21 @@ export default function SleepUI() {
     const Sleep_comp = () => {
         switch (sleep) {
             case sleep_types.no:
-                return <span className="w-[100%] flex flex-row-reverse">none</span>;
+                return <span className="w-full flex flex-row-reverse">none</span>;
             case sleep_types.five:
-                return <span className="w-[100%] flex flex-row-reverse">5</span>;
+                return <span className="w-full flex flex-row-reverse">5</span>;
             case sleep_types.ten:
-                return <span className="w-[100%] flex flex-row-reverse">10</span>;
+                return <span className="w-full flex flex-row-reverse">10</span>;
             case sleep_types.tenfive:
-                return <span className="w-[100%] flex flex-row-reverse">15</span>;
+                return <span className="w-full flex flex-row-reverse">15</span>;
             case sleep_types.threeten:
-                return <span className="w-[100%] flex flex-row-reverse">30</span>;
+                return <span className="w-full flex flex-row-reverse">30</span>;
             case sleep_types.fourfive:
-                return <span className="w-[100%] flex flex-row-reverse">45</span>;
+                return <span className="w-full flex flex-row-reverse">45</span>;
             case sleep_types.hour:
-                return <span className="w-[100%] flex flex-row-reverse">1 hour</span>;
+                return <span className="w-full flex flex-row-reverse">1 hour</span>;
             default:
-                return <span className="w-[100%] flex flex-row-reverse">End</span>;
+                return <span className="w-full flex flex-row-reverse">End</span>;
         }
     }
 
@@ -37,7 +37,7 @@ export default function SleepUI() {
             <span className='w-[60px]  mr-[5px] flex flex-row-reverse'>
                 <Sleep_comp />
             </span>
-            <span className='mr-[10px]'
+            <span className='mr-2.5'
                 onClick={() => {
                     const index = sleep_type.indexOf(sleep);
                     let kill_time: string | number = new Date().getTime();

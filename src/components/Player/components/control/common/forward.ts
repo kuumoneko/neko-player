@@ -1,4 +1,4 @@
-import { add_items } from "@/utils/add_items";
+import { add_items } from "../../../../../utils/add_items.ts";
 
 export default async function forward(
     getUrl: (source: "youtube" | "spotify" | "local",
@@ -7,8 +7,8 @@ export default async function forward(
 ) {
     let playedsongs: any[] = JSON.parse(localStorage.getItem("playedsongs") || "[]");
     const playing = JSON.parse(localStorage.getItem("playing") as string);
-    let playQueue = JSON.parse(localStorage.getItem("play") as string ?? "{}")
-    const nextfrom = JSON.parse(localStorage.getItem("nextfrom") as string ?? "{}")
+    let playQueue = JSON.parse(localStorage.getItem("play") ?? "[]") //await fetch_profile("get", LocalStorageKeys.play);
+    const nextfrom = JSON.parse(localStorage.getItem("nextfrom") ?? "{}")//await fetch_profile("get", LocalStorageKeys.nextfrom)
 
     playedsongs.push({
         artists: typeof playing.artists === "string" ? playing.artists : playing.artists.map((artist: any) => artist.name).join(", "),

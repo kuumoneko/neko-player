@@ -47,21 +47,6 @@ export default class Player {
 
     getAudioURLAlternative(id: string): Promise<string> {
         return new Promise(async (resolve) => {
-            Platform.shim.eval = async (data: Types.BuildScriptResult, env: Record<string, Types.VMPrimative>) => {
-                const properties = [];
-
-                if (env.n) {
-                    properties.push(`n: exportedVars.nFunction("${env.n}")`)
-                }
-
-                if (env.sig) {
-                    properties.push(`sig: exportedVars.sigFunction("${env.sig}")`)
-                }
-
-                const code = `${data.output}\nreturn { ${properties.join(', ')} }`;
-
-                return new Function(code)();
-            }
 
             if (this.youtube_player === null || this.youtube_player === undefined) {
                 this.youtube_player = await Innertube.create({ client_type: ClientType.ANDROID });
@@ -72,18 +57,18 @@ export default class Player {
                     const info = await this.youtube_player.getBasicInfo(id);
                     const format = info.chooseFormat({ type: 'audio', quality: 'best' });
                     if (format) {
-                        url = await format.decipher(this.youtube_player.session.player) ?? "";
+                        url = await format.decipher() ?? "";
                     }
                     else {
                         url = "";
-                        this.youtube_player = await Innertube.create({ client_type: ClientType.ANDROID });
+                        this.youtube_player =null as unknown as Innertube;
 
                     }
                     // console.log(url)
                 }
                 catch (e) {
                     url = "";
-                    this.youtube_player = await Innertube.create({ client_type: ClientType.ANDROID });
+                    this.youtube_player =null as unknown as Innertube;
                 }
             }
             resolve(url)

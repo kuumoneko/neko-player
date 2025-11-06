@@ -3,22 +3,6 @@ import Spotify from "./player/spotify";
 import Youtube from "./player/youtube";
 import Innertube, { Platform, Types, ClientType } from "youtubei.js";
 
-Platform.shim.eval = async (data: Types.BuildScriptResult, env: Record<string, Types.VMPrimative>) => {
-    const properties = [];
-
-    if (env.n) {
-        properties.push(`n: exportedVars.nFunction("${env.n}")`)
-    }
-
-    if (env.sig) {
-        properties.push(`sig: exportedVars.sigFunction("${env.sig}")`)
-    }
-
-    const code = `${data.output}\nreturn { ${properties.join(', ')} }`;
-
-    return new Function(code)();
-}
-
 export default class Player {
     private static instance: Player;
     public spotify: Spotify;
@@ -63,6 +47,22 @@ export default class Player {
 
     getAudioURLAlternative(id: string): Promise<string> {
         return new Promise(async (resolve) => {
+            Platform.shim.eval = async (data: Types.BuildScriptResult, env: Record<string, Types.VMPrimative>) => {
+                const properties = [];
+
+                if (env.n) {
+                    properties.push(`n: exportedVars.nFunction("${env.n}")`)
+                }
+
+                if (env.sig) {
+                    properties.push(`sig: exportedVars.sigFunction("${env.sig}")`)
+                }
+
+                const code = `${data.output}\nreturn { ${properties.join(', ')} }`;
+
+                return new Function(code)();
+            }
+
             if (this.youtube_player === null || this.youtube_player === undefined) {
                 this.youtube_player = await Innertube.create({ client_type: ClientType.TV });
             }
@@ -81,7 +81,7 @@ export default class Player {
                 catch (e) {
                     url = "";
                     this.youtube_player = await Innertube.create({ client_type: ClientType.TV });
-                 }
+                }
             }
             resolve(url)
         })

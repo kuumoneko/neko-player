@@ -48,11 +48,12 @@ export default class Player {
     getAudioURLAlternative(id: string): Promise<string> {
         return new Promise(async (resolve) => {
 
-            if (this.youtube_player === null || this.youtube_player === undefined) {
-                this.youtube_player = await Innertube.create({ client_type: ClientType.ANDROID });
-            }
+
             let url = "";
             while (url === "") {
+                if (this.youtube_player === null || this.youtube_player === undefined) {
+                    this.youtube_player = await Innertube.create({ client_type: ClientType.ANDROID });
+                }
                 try {
                     const info = await this.youtube_player.getBasicInfo(id);
                     const format = info.chooseFormat({ type: 'audio', quality: 'best' });
@@ -69,7 +70,7 @@ export default class Player {
                 catch (e) {
                     url = "";
                     this.youtube_player = null as unknown as Innertube;
-                    console.error("bug here" , e)
+                    console.error("bug here", e)
 
                 }
             }

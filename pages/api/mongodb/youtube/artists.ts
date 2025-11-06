@@ -7,7 +7,7 @@ export default async function mongo_youtube_artists(mode: "GET" | "POST", ids: s
     await client.connect();
 
     if (mode === "GET") {
-        let results: any[] = await collection.find({ id: { $in: ids } }).toArray()
+        let results: any[] = await collection.find({ id: { $in: ids } }, { projection: { _id: 0 } }).toArray()
 
         return results
     }

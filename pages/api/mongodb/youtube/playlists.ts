@@ -6,7 +6,7 @@ export default async function mongo_youtube_playlists(mode: "GET" | "POST", ids:
     const collection = db.collection('playlists');
     await client.connect();
     if (mode === "GET") {
-        let results: any[] = await collection.find({ id: { $in: ids } }).toArray()
+        let results: any[] = await collection.find({ id: { $in: ids } }, { projection: { _id: 0 } }).toArray()
 
         return results
     }

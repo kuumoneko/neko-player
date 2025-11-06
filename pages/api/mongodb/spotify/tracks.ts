@@ -6,7 +6,7 @@ export default async function mongo_spotify_tracks(mode: "GET" | "POST", ids: st
     const collection = db.collection('tracks');
     await client.connect();
     if (mode === "GET") {
-        let results: any[] = await collection.find({ id: { $in: ids } }).toArray()
+        let results: any[] = await collection.find({ id: { $in: ids } }, { projection: { _id: 0 } }).toArray()
         return ids.map((id: string) => {
             const temp = results.find((result: any) => {
                 return result.id === id

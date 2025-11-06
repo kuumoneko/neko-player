@@ -1,7 +1,8 @@
 import { Api_key, Track } from "@/types";
 import Spotify from "./player/spotify";
 import Youtube from "./player/youtube";
-import Innertube, { Platform, Types, ClientType } from "youtubei.js";
+import Innertube, { ClientType } from "youtubei.js";
+import { generate } from "youtube-po-token-generator"
 
 export default class Player {
     private static instance: Player;
@@ -52,7 +53,8 @@ export default class Player {
             let url = "";
             while (url === "") {
                 if (this.youtube_player === null || this.youtube_player === undefined) {
-                    this.youtube_player = await Innertube.create({ generate_session_locally: true, client_type: ClientType.TV });
+                    const po_token = await generate()
+                    this.youtube_player = await Innertube.create({ generate_session_locally: true, client_type: ClientType.ANDROID, po_token: po_token.poToken });
                 }
                 try {
                     const info = await this.youtube_player.getBasicInfo(id);

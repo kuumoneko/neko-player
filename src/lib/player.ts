@@ -52,7 +52,7 @@ export default class Player {
             let url = "";
             while (url === "") {
                 if (this.youtube_player === null || this.youtube_player === undefined) {
-                    this.youtube_player = await Innertube.create({ client_type: ClientType.TV });
+                    this.youtube_player = await Innertube.create();
                 }
                 try {
                     const info = await this.youtube_player.getBasicInfo(id);

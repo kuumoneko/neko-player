@@ -56,7 +56,7 @@ export default class Player {
                 }
                 try {
                     const info = await this.youtube_player.getBasicInfo(id);
-                    console.warn(info)
+                    console.warn(info.playability_status)
                     const format = info.chooseFormat({ type: 'audio', quality: 'best' });
                     if (format) {
                         url = await format.decipher() ?? "";

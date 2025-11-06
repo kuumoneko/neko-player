@@ -6,10 +6,11 @@ export default function VolumeUI({
 }: {
     audioRef: RefObject<HTMLAudioElement>;
 }) {
-    const [volume, setvolume] = useState(() =>
-        Number(localStorage.getItem("volume") || 50)
-    );
+    const [volume, setvolume] = useState(50);
     const volumeSliderRef = useRef<HTMLInputElement>(null);
+    useEffect(() => {
+        setvolume(Number(localStorage.getItem("volume") || 50));
+    }, []);
 
     useEffect(() => {
         if (volumeSliderRef.current) {

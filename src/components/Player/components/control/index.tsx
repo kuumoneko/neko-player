@@ -20,19 +20,13 @@ import formatDuration from "../../../../utils/format.ts";
 import Slider from "../../common/Slider/index.tsx";
 import backward from "./common/backward.ts";
 import forward from "./common/forward.ts";
-import fetch_profile, { LocalStorageKeys } from "@/utils/profile.ts";
 import stream from "@/utils/music/stream.ts";
 
 const handleCloseTab = () => {
     try {
-        const { ipcRenderer } = window.require("electron");
-        ipcRenderer.send("app-close");
+        // window.location.href = "https://www.google.com";
     } catch {
-        try {
-            window.location.href = "https://www.google.com";
-        } catch {
-            return "no";
-        }
+        return "no";
     }
 };
 
@@ -42,15 +36,18 @@ export default function ControlUI({
     audioRef: RefObject<HTMLAudioElement>;
 }) {
     const [played, setplayed] = useState(false);
-    const [shuffle, setshuffle] = useState(
-        localStorage.getItem("shuffle") || "disable"
-    );
-    const [repeat, setrepeat] = useState(
-        localStorage.getItem("repeat") || "disable"
-    );
-    const [isloading, setisloading] = useState(
-        JSON.parse(localStorage.getItem("play_url") as string).url || null
-    );
+    const [shuffle, setshuffle] = useState("disable");
+    const [repeat, setrepeat] = useState("disable");
+    const [isloading, setisloading] = useState(true);
+
+    useEffect(() => {
+        setshuffle(localStorage.getItem("shuffle") ?? "disable");
+        setrepeat(localStorage.getItem("repeat") ?? "disable");
+        setisloading(
+            JSON.parse((localStorage.getItem("play_url") as string) ?? "{}")
+                .url === null
+        );
+    }, []);
 
     const getUrl = async (
         source: string,
@@ -94,8 +91,7 @@ export default function ControlUI({
             audioRef.current.pause();
             audioRef.current.src = "";
             audioRef.current.load();
-
-            audioRef.current = new Audio(data.url);
+            audioRef.current = new Audio(data);
             audioRef.current.load();
             audioRef.current.addEventListener("loadedmetadata", () => {
                 setduraion(audioRef.current.duration);
@@ -108,7 +104,10 @@ export default function ControlUI({
                 }
             });
 
-            const temp = JSON.parse(localStorage.getItem("playing") ?? "{}");
+            const temp = JSON.parse(
+                localStorage.getItem("playing") ??
+                    "{name: '', artists: '', thumbnail: '', source: '', id: '', duration: ''}"
+            );
             navigator.mediaSession.metadata = new MediaMetadata({
                 title: temp.name,
                 artist: temp.artists,
@@ -158,7 +157,9 @@ export default function ControlUI({
 
     useEffect(() => {
         const run = setInterval(() => {
-            const data = JSON.parse(localStorage.getItem("play_url") as string);
+            const data = JSON.parse(
+                (localStorage.getItem("play_url") as string) ?? "{}"
+            );
             setisloading(data.url === null ? true : false);
             setTime((audioRef.current?.currentTime as number) ?? 0);
             setduraion((audioRef.current?.duration as number) ?? 0);
@@ -174,11 +175,11 @@ export default function ControlUI({
         return () => clearInterval(run);
     }, []);
 
-    const [Time, setTime] = useState(() =>
-        Number(localStorage.getItem("time") ?? 0)
-    );
+    const [Time, setTime] = useState(0);
     const TimeSliderRef = useRef<HTMLInputElement>(null);
-
+    useEffect(() => {
+        setTime(Number(localStorage.getItem("time") ?? 0));
+    }, []);
     useEffect(() => {
         if (!audioRef.current) return;
         if (played) {
@@ -333,6 +334,13 @@ export default function ControlUI({
         };
     }, []);
 
+    const [playedsongs, setplayedsongs] = useState([]);
+    useEffect(() => {
+        setplayedsongs(
+            JSON.parse(localStorage.getItem("playedsongs") as string) ?? []
+        );
+    }, []);
+
     return (
         <div className="flex flex-col items-center">
             <div
@@ -356,8 +364,7 @@ export default function ControlUI({
                 </button>
                 <button
                     className={`mx-0.5 p-0.5 cursor-default select-none ${
-                        JSON.parse(localStorage.getItem("playedsongs") || "[]")
-                            .length === 0
+                        playedsongs.length === 0
                             ? "opacity-50 pointer-events-none"
                             : ""
                     }`}

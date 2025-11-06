@@ -52,11 +52,11 @@ export default class Player {
             let url = "";
             while (url === "") {
                 if (this.youtube_player === null || this.youtube_player === undefined) {
-                    this.youtube_player = await Innertube.create({ client_type: ClientType.ANDROID });
+                    this.youtube_player = await Innertube.create({ client_type: ClientType.TV });
                 }
                 try {
                     const info = await this.youtube_player.getBasicInfo(id);
-                    console.warn(info.streaming_data?.adaptive_formats.map((item:any) => item.url))
+                    console.warn(info)
                     const format = info.chooseFormat({ type: 'audio', quality: 'best' });
                     if (format) {
                         url = await format.decipher() ?? "";

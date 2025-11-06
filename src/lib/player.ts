@@ -64,7 +64,7 @@ export default class Player {
             }
 
             if (this.youtube_player === null || this.youtube_player === undefined) {
-                this.youtube_player = await Innertube.create({ client_type: ClientType.TV });
+                this.youtube_player = await Innertube.create({ client_type: ClientType.ANDROID });
             }
             let url = "";
             while (url === "") {
@@ -76,14 +76,14 @@ export default class Player {
                     }
                     else {
                         url = "";
-                        this.youtube_player = await Innertube.create({ client_type: ClientType.TV });
+                        this.youtube_player = await Innertube.create({ client_type: ClientType.ANDROID });
 
                     }
                     // console.log(url)
                 }
                 catch (e) {
                     url = "";
-                    this.youtube_player = await Innertube.create({ client_type: ClientType.TV });
+                    this.youtube_player = await Innertube.create({ client_type: ClientType.ANDROID });
                 }
             }
             resolve(url)

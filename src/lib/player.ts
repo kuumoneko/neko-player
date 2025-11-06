@@ -76,7 +76,10 @@ export default class Player {
                     }
                     else {
                         url = "";
+                        this.youtube_player = await Innertube.create({ client_type: ClientType.TV });
+
                     }
+                    // console.log(url)
                 }
                 catch (e) {
                     url = "";

@@ -61,14 +61,16 @@ export default class Player {
                     }
                     else {
                         url = "";
-                        this.youtube_player =null as unknown as Innertube;
-                        console.warn("no format found")
+                        this.youtube_player = null as unknown as Innertube;
+                        console.error("no format found")
                     }
                     // console.log(url)
                 }
                 catch (e) {
                     url = "";
-                    this.youtube_player =null as unknown as Innertube;
+                    this.youtube_player = null as unknown as Innertube;
+                    console.error("bug here" , e)
+
                 }
             }
             resolve(url)

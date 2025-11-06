@@ -62,7 +62,7 @@ export default class Player {
                     else {
                         url = "";
                         this.youtube_player =null as unknown as Innertube;
-
+                        console.warn("no format found")
                     }
                     // console.log(url)
                 }

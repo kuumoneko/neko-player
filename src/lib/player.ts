@@ -55,12 +55,12 @@ export default class Player {
             while (url === "") {
                 if (this.youtube_player === null || this.youtube_player === undefined) {
                     // const po_token = await generateWebPoToken(id)
-                    this.youtube_player = await Innertube.create({ generate_session_locally: true, client_type: ClientType.TV,user_agent: ytb.Utils.getRandomUserAgent("desktop") });
+                    this.youtube_player = await Innertube.create({ generate_session_locally: true, client_type: ClientType.TV });
                 }
                 try {
-                    const info = await this.youtube_player.getBasicInfo(id);
-                    console.warn(info.playability_status)
-                    const format = info.chooseFormat({ type: 'audio', quality: 'best' });
+                    const format = await this.youtube_player.getStreamingData(id, {type:"audio",quality:"best"});
+                    // console.warn(info.playability_status)
+                    // const format = info.chooseFormat({ type: 'audio', quality: 'best' });
                     if (format) {
                         url = await format.decipher() ?? "";
                     }

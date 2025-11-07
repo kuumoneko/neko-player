@@ -62,7 +62,7 @@ export default class Player {
                 }
                 if (this.youtube_player === null || this.youtube_player === undefined) {
                     // const po_token = await generateWebPoToken(id)
-                    this.youtube_player = await Innertube.create({ generate_session_locally: true, client_type: ClientType.TV });
+                    this.youtube_player = await Innertube.create({ generate_session_locally: true, client_type: ClientType.TV,visitor_data:this.po_token ?? "" });
                 }
                 try {
                     const info = await this.youtube_player.getBasicInfo(id);

@@ -21,7 +21,8 @@
         "mongodb": "^6.20.0",
         "next": "^16.0.0",
         "react": "^19.2.0",
-        "youtubei.js": "^16.0.1"
+        "youtubei.js": "^16.0.1",
+        "ytdlp-nodejs": "^2.3.5"
     },
     "devDependencies": {
         "@tailwindcss/postcss": "^4",

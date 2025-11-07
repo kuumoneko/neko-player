@@ -40,6 +40,7 @@ export default function ControlUI({
     const [shuffle, setshuffle] = useState("disable");
     const [repeat, setrepeat] = useState("disable");
     const [isloading, setisloading] = useState(true);
+    const [dom , setdom] = useState(<></>);
 
     useEffect(() => {
         setshuffle(localStorage.getItem("shuffle") ?? "disable");

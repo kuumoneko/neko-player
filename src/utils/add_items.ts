@@ -4,13 +4,13 @@ export const add_items = async (source: string, mode: string, id: string, after_
     let data: any;
 
     if (mode === "playlist") {
-        data = await fetch(`/api/music/${source}/playlists`, { method: "POST", body: JSON.stringify({ ids: [id] }) })
+        data = await fetch(`/api/music/${source}/playlists`, { method: "POST", body: JSON.stringify({ id: id }) })
     }
     else if (mode === "track") {
-        data = await fetch(`/api/music/${source}/tracks`, { method: "POST", body: JSON.stringify({ ids: [id] }) })
+        data = await fetch(`/api/music/${source}/tracks`, { method: "POST", body: JSON.stringify({ id: id }) })
     }
-
-    const tracks = data.tracks as Track[];
+    const temp = (await data.json()).data;
+    const tracks = temp.tracks as Track[];
 
     const shuffle = localStorage.getItem("shuffle") || "disable";
 

@@ -2,16 +2,11 @@ import { Api_key, Track } from "@/types";
 import Spotify from "./player/spotify";
 import Youtube from "./player/youtube";
 import Innertube, { ClientType } from "youtubei.js/web";
-import { scrapeYouTubeData } from 'po-token-generator';
-import Basic_Info from "./temp";
-
-
 export default class Player {
     private static instance: Player;
     public spotify: Spotify;
     public youtube: Youtube;
     private youtube_player: Innertube
-    private po_token:string | null= null
 
     constructor() {
         const spotify_api_keys: Api_key[] = [];
@@ -55,19 +50,12 @@ export default class Player {
 
             let url = "";
             while (url === "") {
-                if (this.po_token === null){
-                    const res = await Basic_Info(id);
-                    this.po_token = res;
-
-                }
                 if (this.youtube_player === null || this.youtube_player === undefined) {
                     // const po_token = await generateWebPoToken(id)
-                    this.youtube_player = await Innertube.create({ generate_session_locally: true, client_type: ClientType.TV,visitor_data:this.po_token ?? "" });
+                    this.youtube_player = await Innertube.create({ generate_session_locally: true, client_type: ClientType.TV });
                 }
                 try {
                     const info = await this.youtube_player.getBasicInfo(id);
-                    // const temp = (await Basic_Info(id)).formats[0];
-                    // console.warn(temp)
                     console.warn(info.playability_status)
                     const format = info.chooseFormat({ type: 'audio', quality: 'best' });
                     if (format) {
@@ -78,7 +66,6 @@ export default class Player {
                         this.youtube_player = null as unknown as Innertube;
                         console.error("no format found")
                     }
-                    // console.log(url)
                 }
                 catch (e) {
                     url = "";

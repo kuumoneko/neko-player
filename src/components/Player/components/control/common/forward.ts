@@ -1,9 +1,7 @@
 import { add_items } from "../../../../../utils/add_items.ts";
 
 export default async function forward(
-    getUrl: (source: "youtube" | "spotify" | "local",
-        id: string,
-        autoplayed: boolean) => Promise<void>,
+    getUrl:any,
 ) {
     let playedsongs: any[] = JSON.parse(localStorage.getItem("playedsongs") || "[]");
     const playing = JSON.parse(localStorage.getItem("playing") as string);
@@ -42,7 +40,7 @@ export default async function forward(
         const [source, mode, id] = nextfrom.from.split(":");
         const track = tracks[0];
         if (mode == "track") {
-            await getUrl(playing.source, playing.id, true);
+            await getUrl(playing.source, playing.id);
 
             localStorage.setItem("playing", JSON.stringify({
                 artists: typeof track.artists === "string" ? track.artists : track.artists.map((artist: any) => artist.name).join(", "),

@@ -15,13 +15,13 @@
         "@fortawesome/react-fontawesome": "^3.0.2",
         "@vercel/functions": "^3.1.1",
         "bcrypt": "^6.0.0",
+        "bgutils-js": "^3.2.0",
         "cookie": "^1.0.2",
+        "jsdom": "^27.1.0",
         "mongodb": "^6.20.0",
         "next": "^16.0.0",
         "react": "^19.2.0",
-        "youtubei.js": "^16.0.1",
-        "bgutils-js": "^3.2.0",
-        "jsdom": "^27.1.0"
+        "youtubei.js": "^16.0.1"
     },
     "devDependencies": {
         "@tailwindcss/postcss": "^4",
@@ -30,6 +30,7 @@
         "@types/next": "^8.0.7",
         "@types/node": "^20",
         "@types/react": "^19",
+        "po-token-generator": "^1.0.1",
         "tailwindcss": "^4",
         "ts-node": "^10.9.2",
         "typescript": "^5"

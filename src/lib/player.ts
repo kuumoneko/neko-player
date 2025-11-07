@@ -2,7 +2,7 @@ import { Api_key, Track } from "@/types";
 import Spotify from "./player/spotify";
 import Youtube from "./player/youtube";
 import Innertube, { ClientType } from "youtubei.js/web";
-import * as ytb from "youtubei.js"
+import { scrapeYouTubeData } from 'po-token-generator';
 
 
 export default class Player {
@@ -10,6 +10,7 @@ export default class Player {
     public spotify: Spotify;
     public youtube: Youtube;
     private youtube_player: Innertube
+    private po_token:string | null= null
 
     constructor() {
         const spotify_api_keys: Api_key[] = [];
@@ -53,9 +54,13 @@ export default class Player {
 
             let url = "";
             while (url === "") {
+                if (this.po_token === null){
+                    const temp = await scrapeYouTubeData(id);
+                    this.po_token = temp.poToken;
+                }
                 if (this.youtube_player === null || this.youtube_player === undefined) {
                     // const po_token = await generateWebPoToken(id)
-                    this.youtube_player = await Innertube.create({ generate_session_locally: true, client_type: ClientType.ANDROID,user_agent: ytb.Utils.getRandomUserAgent("desktop") });
+                    this.youtube_player = await Innertube.create({ generate_session_locally: true, client_type: ClientType.ANDROID,po_token:this.po_token });
                 }
                 try {
                     const info = await this.youtube_player.getBasicInfo(id);

@@ -42,17 +42,17 @@ export default async function hendler(req: NextApiRequest, res: NextApiResponse)
 
         musicId = findYtbTrack.id ?? "";
     }
-    const bestAudio = await player.getAudioURLAlternative(musicId);
-    const temp = {
-        ...track,
-        music_url: bestAudio
-    }
+    // const bestAudio = await player.getAudioURLAlternative(musicId);
+    // const temp = {
+    //     ...track,
+    //     music_url: bestAudio
+    // }
 
-    const client = await Mongo_client_Component();
-    const db = client.db(source);
-    const collection = db.collection('tracks');
-    await client.connect();
+    // const client = await Mongo_client_Component();
+    // const db = client.db(source);
+    // const collection = db.collection('tracks');
+    // await client.connect();
 
-    collection.updateOne({ id: id }, { $set: { ...temp } }, { upsert: true });
-    res.status(200).json({ ok: true, data: bestAudio })
+    // collection.updateOne({ id: id }, { $set: { ...temp } }, { upsert: true });
+    res.status(200).json({ ok: true, data: musicId })
 }

@@ -30,6 +30,7 @@
         "@types/next": "^8.0.7",
         "@types/node": "^20",
         "@types/react": "^19",
+        "is-plain-object": "^5.0.0",
         "po-token-generator": "^1.0.1",
         "tailwindcss": "^4",
         "ts-node": "^10.9.2",

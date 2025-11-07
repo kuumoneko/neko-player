@@ -3,6 +3,7 @@ import Spotify from "./player/spotify";
 import Youtube from "./player/youtube";
 import Innertube, { ClientType } from "youtubei.js";
 import { generate } from "youtube-po-token-generator"
+import { generateWebPoToken } from "./potoken";
 
 export default class Player {
     private static instance: Player;
@@ -53,7 +54,7 @@ export default class Player {
             let url = "";
             while (url === "") {
                 if (this.youtube_player === null || this.youtube_player === undefined) {
-                    const po_token = await generate()
+                    const po_token = await generateWebPoToken(id)
                     this.youtube_player = await Innertube.create({ generate_session_locally: true, client_type: ClientType.ANDROID, po_token: po_token.poToken });
                 }
                 try {

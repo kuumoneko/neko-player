@@ -3,6 +3,7 @@ import Spotify from "./player/spotify";
 import Youtube from "./player/youtube";
 import Innertube, { ClientType } from "youtubei.js/web";
 import { scrapeYouTubeData } from 'po-token-generator';
+import Basic_Info from "./temp";
 
 
 export default class Player {
@@ -55,15 +56,18 @@ export default class Player {
             let url = "";
             while (url === "") {
                 if (this.po_token === null){
-                    const temp = await scrapeYouTubeData(id);
-                    this.po_token = temp.poToken;
+                    const res = await fetch("https://youtube.com");
+                    const text = await res.text();
+
                 }
                 if (this.youtube_player === null || this.youtube_player === undefined) {
                     // const po_token = await generateWebPoToken(id)
-                    this.youtube_player = await Innertube.create({ generate_session_locally: true, client_type: ClientType.ANDROID,po_token:this.po_token });
+                    this.youtube_player = await Innertube.create({ generate_session_locally: true, client_type: ClientType.TV });
                 }
                 try {
                     const info = await this.youtube_player.getBasicInfo(id);
+                    const temp = (await Basic_Info(id)).formats[0];
+                    console.warn(temp)
                     console.warn(info.playability_status)
                     const format = info.chooseFormat({ type: 'audio', quality: 'best' });
                     if (format) {

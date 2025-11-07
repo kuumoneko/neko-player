@@ -1,7 +1,7 @@
 import { Api_key, Track } from "@/types";
 import Spotify from "./player/spotify";
 import Youtube from "./player/youtube";
-import Innertube, { ClientType } from "youtubei.js";
+import Innertube, { ClientType } from "youtubei.js/web.bundle";
 import * as ytb from "youtubei.js"
 
 

@@ -64,42 +64,10 @@ export default function ControlUI({
 
             let data = await stream(source as "youtube" | "spotify", id);
 
-            // if (source === "local") {
-            //     const audio_format = id.split(".")[id.split(".").length - 1];
-
-            //     const byteCharacters = atob(data);
-            //     const byteArrays: any = [];
-
-            //     for (let i = 0; i < byteCharacters.length; i += 1024) {
-            //         const slice = byteCharacters.slice(i, i + 1024);
-            //         const byteNumbers = new Array(slice.length);
-            //         for (let j = 0; j < slice.length; j++) {
-            //             byteNumbers[j] = slice.charCodeAt(j);
-            //         }
-            //         const byteArray = new Uint8Array(byteNumbers);
-            //         byteArrays.push(byteArray);
-            //     }
-            //     const blob = new Blob(byteArrays, {
-            //         type: `audio/${audio_format}`,
-            //     });
-
-            //     const blobUrl = URL.createObjectURL(blob);
-
-            //     data = blobUrl;
-            // }
-
             setplayed(false);
             audioRef.current.pause();
             audioRef.current.src = "";
             audioRef.current.load();
-            const tempp = await Innertube.create();
-            const format = await tempp.getStreamingData(data, {
-                type: "audio",
-                quality: "best",
-            });
-            if (format) {
-                data = (await format.decipher()) ?? "";
-            }
 
             audioRef.current = new Audio(data);
             audioRef.current.load();

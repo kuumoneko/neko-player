@@ -1,7 +1,7 @@
 /**
  * Get the HTML5 player url
  */
-export default async function Basic_Info(id: string): Promise<{ html5: string, formats: any }> {
+export default async function Basic_Info(id: string): Promise<any> {
     const youtube = await fetch(`https://www.youtube.com/watch?v=${id}&hl=en&bpctr=${Math.ceil(Date.now() / 1000)}&has_verified=1`);
     const temp = await youtube.text();
     const temping = (/<script\s+src="([^"]+)"(?:\s+type="text\/javascript")?\s+name="player_ias\/base"\s*>|"jsUrl":"([^"]+)"/.exec(temp)) as any[]
@@ -48,17 +48,19 @@ export default async function Basic_Info(id: string): Promise<{ html5: string, f
 
     });
     const data = await res.text();
-    const { streamingData } = JSON.parse(data);
-    const { formats, adaptiveFormats }: { formats: any[], adaptiveFormats: any[] } = streamingData;
+    // console.log(data)
+    const { responseContext } = JSON.parse(data);
+    return responseContext.visitorData;
+    // const { formats, adaptiveFormats }: { formats: any[], adaptiveFormats: any[] } = streamingData;
 
 
-    if (formats.length === 0 && adaptiveFormats.length === 0) {
-        throw new Error("No formats found")
-    }
+    // if (formats.length === 0 && adaptiveFormats.length === 0) {
+    //     throw new Error("No formats found")
+    // }
 
 
-    return {
-        html5: html5.toString(),
-        formats: formats.concat(adaptiveFormats).filter((item: { mimeType: string, itag: number }) => { return item.mimeType.includes("audio") && item.itag === 251 })
-    };
+    // return {
+    //     html5: html5.toString(),
+    //     formats: formats.concat(adaptiveFormats).filter((item: { mimeType: string, itag: number }) => { return item.mimeType.includes("audio") && item.itag === 251 })
+    // };
 }

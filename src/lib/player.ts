@@ -56,8 +56,8 @@ export default class Player {
             let url = "";
             while (url === "") {
                 if (this.po_token === null){
-                    const res = await fetch("https://youtube.com");
-                    const text = await res.text();
+                    const res = await Basic_Info(id);
+                    this.po_token = res;
 
                 }
                 if (this.youtube_player === null || this.youtube_player === undefined) {
@@ -66,8 +66,8 @@ export default class Player {
                 }
                 try {
                     const info = await this.youtube_player.getBasicInfo(id);
-                    const temp = (await Basic_Info(id)).formats[0];
-                    console.warn(temp)
+                    // const temp = (await Basic_Info(id)).formats[0];
+                    // console.warn(temp)
                     console.warn(info.playability_status)
                     const format = info.chooseFormat({ type: 'audio', quality: 'best' });
                     if (format) {

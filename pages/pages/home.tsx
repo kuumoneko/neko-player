@@ -23,18 +23,19 @@ export default function HomePage({
         run();
     }, []);
     return (
-        <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center justify-start h-full w-full">
             {artists.length > 0 && (
                 <div className="flex flex-col items-center">
-                    <h1>Artists</h1>
-                    <div className="flex flex-row">
+                    <h1 className="text-2xl font-bold">Artists</h1>
+                    <div className="flex flex-row overflow-x-scroll [&::-webkit-scrollbar]:hidden">
                         {artists.map((artist: Artist) => {
                             return (
-                                <div className="flex flex-row items-center" onClick={() => {
+                                <div className="flex flex-row items-center mr-4 my-3 bg-slate-600 p-2 rounded-4xl hover:bg-slate-500 hover:cursor-pointer" onClick={() => {
                                     goto(`/artists/${artist.source}/${artist.id}` , seturl);
                                 }}>
                                     <div>
                                         <img
+                                        className="mr-2 rounded-2xl"
                                             src={artist.thumbnail}
                                             height={50}
                                             width={50}
@@ -48,15 +49,15 @@ export default function HomePage({
                 </div>
             )}
             {playlists.length > 0 && (
-                <div>
-                    <h1>Playlists</h1>
-                    <div className="flex flex-row">
+                <div className="flex flex-col items-center">
+                    <h1 className="text-2xl font-bold">Playlists</h1>
+                    <div className="flex flex-row items-center">
                         {playlists.map((playlist: Playlist) => {
                             return (
-                                <div className="flex flex-row items-center" onClick={() => {
+                                <div className="flex flex-row items-center mr-4 my-3 bg-slate-600 p-2 rounded-4xl hover:bg-slate-500 hover:cursor-pointer" onClick={() => {
                                     goto(`/playlists/${playlist.source}/${playlist.id}` , seturl);
                                 }}>
-                                    <img src={playlist.thumbnail} alt="" />
+                                    <img className="mr-2 rounded-2xl" src={playlist.thumbnail} height={playlist.source === "spotify" ? 60 : 50} width={playlist.source === "spotify" ? 60 : 80} />
                                     <div>{playlist.name}</div>
                                 </div>
                             );
@@ -65,18 +66,18 @@ export default function HomePage({
                 </div>
             )}
             {new_tracks.length > 0 && (
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-3 gap-4 overflow-y-scroll [&::-webkit-scrollbar]:hidden">
                     {new_tracks.map((track: Track) => {
                         return (
-                            <div className="flex flex-row" 
+                            <div className="flex flex-row items-center rounded-2xl hover:cursor-pointer hover:bg-slate-600" 
                             onDoubleClick={() => {
                                 Play(track, track.source, "track", track.id, [track])
                             }}>
-                                <img src={track.thumbnail} alt="" />
+                                <img className="mr-2 rounded-2xl" src={track.thumbnail} alt="" />
                                 <div className="flex flex-col">
                                     <div>{track.name}</div>
                                     <div className="flex flex-row">
-                                        <div>{track.artist[0].name}</div>
+                                        <div className="mr-4">{track.artist[0].name}</div>
                                         <div>
                                             {formatDuration(
                                                 track.duration / 1000

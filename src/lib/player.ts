@@ -1,12 +1,10 @@
 import { Api_key, Track } from "@/types";
 import Spotify from "./player/spotify";
 import Youtube from "./player/youtube";
-import Innertube, { ClientType } from "youtubei.js/web";
 export default class Player {
     private static instance: Player;
     public spotify: Spotify;
     public youtube: Youtube;
-    private youtube_player: Innertube
 
     constructor() {
         const spotify_api_keys: Api_key[] = [];
@@ -34,7 +32,7 @@ export default class Player {
             start += 1;
         }
         this.youtube = new Youtube({ api_keys: youtube_api_keys })
-        this.youtube_player = null as unknown as Innertube;
+        // this.youtube_player = null as unknown as Innertube;
     }
 
     public static getInstance(): Player {
@@ -44,39 +42,39 @@ export default class Player {
         return Player.instance;
     }
 
-    getAudioURLAlternative(id: string): Promise<string> {
-        return new Promise(async (resolve) => {
+    // getAudioURLAlternative(id: string): Promise<string> {
+    //     return new Promise(async (resolve) => {
 
 
-            let url = "";
-            while (url === "") {
-                if (this.youtube_player === null || this.youtube_player === undefined) {
-                    // const po_token = await generateWebPoToken(id)
-                    this.youtube_player = await Innertube.create({ generate_session_locally: true, client_type: ClientType.TV });
-                }
-                try {
-                    const info = await this.youtube_player.getBasicInfo(id);
-                    console.warn(info.playability_status)
-                    const format = info.chooseFormat({ type: 'audio', quality: 'best' });
-                    if (format) {
-                        url = await format.decipher() ?? "";
-                    }
-                    else {
-                        url = "";
-                        this.youtube_player = null as unknown as Innertube;
-                        console.error("no format found")
-                    }
-                }
-                catch (e) {
-                    url = "";
-                    this.youtube_player = null as unknown as Innertube;
-                    console.error("bug here", e)
+    //         let url = "";
+    //         while (url === "") {
+    //             if (this.youtube_player === null || this.youtube_player === undefined) {
+    //                 // const po_token = await generateWebPoToken(id)
+    //                 this.youtube_player = await Innertube.create({ generate_session_locally: true, client_type: ClientType.TV });
+    //             }
+    //             try {
+    //                 const info = await this.youtube_player.getBasicInfo(id);
+    //                 console.warn(info.playability_status)
+    //                 const format = info.chooseFormat({ type: 'audio', quality: 'best' });
+    //                 if (format) {
+    //                     url = await format.decipher() ?? "";
+    //                 }
+    //                 else {
+    //                     url = "";
+    //                     this.youtube_player = null as unknown as Innertube;
+    //                     console.error("no format found")
+    //                 }
+    //             }
+    //             catch (e) {
+    //                 url = "";
+    //                 this.youtube_player = null as unknown as Innertube;
+    //                 console.error("bug here", e)
 
-                }
-            }
-            resolve(url)
-        })
-    }
+    //             }
+    //         }
+    //         resolve(url)
+    //     })
+    // }
 
 
 

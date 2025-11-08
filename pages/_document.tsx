@@ -18,7 +18,7 @@ export default function Document() {
         <Html lang="en" className="" suppressHydrationWarning>
             <Head />
 
-            <body className="antialiased">
+            <body className="antialiased overflow-hidden">
                 <Main />
                 <NextScript />
             </body>

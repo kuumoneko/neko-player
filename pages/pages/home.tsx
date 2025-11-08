@@ -2,6 +2,8 @@ import { Artist, Playlist, Track } from "@/types";
 import home_page from "@/utils/music/home";
 import { useEffect, useState } from "react";
 import formatDuration from "../../src/utils/format";
+import { goto } from "@/lib/url";
+import Play from "@/components/Show/common/play";
 
 export default function HomePage({
     seturl,
@@ -28,7 +30,9 @@ export default function HomePage({
                     <div className="flex flex-row">
                         {artists.map((artist: Artist) => {
                             return (
-                                <div className="flex flex-row items-center">
+                                <div className="flex flex-row items-center" onClick={() => {
+                                    goto(`/artists/${artist.source}/${artist.id}` , seturl);
+                                }}>
                                     <div>
                                         <img
                                             src={artist.thumbnail}
@@ -49,7 +53,9 @@ export default function HomePage({
                     <div className="flex flex-row">
                         {playlists.map((playlist: Playlist) => {
                             return (
-                                <div className="flex flex-row items-center">
+                                <div className="flex flex-row items-center" onClick={() => {
+                                    goto(`/playlists/${playlist.source}/${playlist.id}` , seturl);
+                                }}>
                                     <img src={playlist.thumbnail} alt="" />
                                     <div>{playlist.name}</div>
                                 </div>
@@ -62,7 +68,10 @@ export default function HomePage({
                 <div className="grid grid-cols-3 gap-4">
                     {new_tracks.map((track: Track) => {
                         return (
-                            <div className="flex flex-row">
+                            <div className="flex flex-row" 
+                            onDoubleClick={() => {
+                                Play(track, track.source, "track", track.id, [track])
+                            }}>
                                 <img src={track.thumbnail} alt="" />
                                 <div className="flex flex-col">
                                     <div>{track.name}</div>

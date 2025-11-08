@@ -15,21 +15,21 @@ export default async function hendler(req: NextApiRequest, res: NextApiResponse)
     else {
         track = (await player.youtube.fetch_track([id]))[0] ?? null;
     }
-    console.log(track)
+    // console.log(track)
 
-    let music_url = track.music_url ?? ""
-    if (music_url.length > 0) {
-        const test_link_response = await fetch(music_url);
-        if (!test_link_response.ok) {
-            music_url = ""
-        }
-    }
+    // let music_url = track.music_url ?? ""
+    // if (music_url.length > 0) {
+    //     const test_link_response = await fetch(music_url);
+    //     if (!test_link_response.ok) {
+    //         music_url = ""
+    //     }
+    // }
 
-    if (music_url !== "") {
-        return res.status(200).json({
-            ok: true, data: music_url
-        })
-    }
+    // if (music_url !== "") {
+    //     return res.status(200).json({
+    //         ok: true, data: music_url
+    //     })
+    // }
 
     let musicId = "";
     if (source === "youtube") {

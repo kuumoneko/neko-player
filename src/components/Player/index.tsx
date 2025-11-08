@@ -4,7 +4,7 @@ import { goto } from "@/lib/url.ts";
 import DataUI from "./components/data/index.tsx";
 import VolumeUI from "./components/volume/index.tsx";
 import SleepUI from "./components/sleep/index.tsx";
-import ControlUI from "./components/control/test.tsx";
+import ControlUI from "./components/control/index.tsx";
 import { RefObject, useEffect, useRef } from "react";
 
 export default function Player({ seturl }: { seturl: (a: string) => void }) {

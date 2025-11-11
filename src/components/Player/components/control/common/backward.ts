@@ -1,7 +1,7 @@
 
 export default async function backward() {
-    let playedsongs: any[] = JSON.parse(localStorage.getItem("playedsongs") || "[]");
-    const playing = JSON.parse(localStorage.getItem("playing") as string);
+    let playedsongs: any[] = JSON.parse(localStorage.getItem("playedsongs") ?? "[]");
+    const playing = JSON.parse(localStorage.getItem("playing") as string ?? "{}");
     const queue = JSON.parse(localStorage.getItem("play") ?? "[]")
     const backward = playedsongs.pop();
 

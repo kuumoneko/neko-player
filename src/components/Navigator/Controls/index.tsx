@@ -20,8 +20,8 @@ export default function ControlPanel({
 
     useEffect(() => {
         const run = setInterval(() => {
-            setbackward((localStorage.getItem("backward") as string) || "[]");
-            setforward((localStorage.getItem("forward") as string) || "[]");
+            setbackward((localStorage.getItem("backward") as string) ?? "[]");
+            setforward((localStorage.getItem("forward") as string) ?? "[]");
             setishome(localStorage.getItem("url") === "/");
         }, 100);
         return () => clearInterval(run);
@@ -39,8 +39,8 @@ export default function ControlPanel({
                     const backw: string[] =
                         JSON.parse(
                             localStorage.getItem("backward") as string
-                        ) || [];
-                    const temp = backw.pop() || "/";
+                        ) ?? [];
+                    const temp = backw.pop() ?? "/";
                     goto(temp, seturl, Force.backward);
                 }}
             >
@@ -62,9 +62,9 @@ export default function ControlPanel({
                 }`}
                 onClick={() => {
                     const forw: string[] =
-                        JSON.parse(localStorage.getItem("forward") as string) ||
+                        JSON.parse(localStorage.getItem("forward") as string) ??
                         [];
-                    const temp = forw.shift() || "/";
+                    const temp = forw.shift() ?? "/";
                     goto(temp, seturl, Force.forward);
                 }}
             >

@@ -1,9 +1,7 @@
 import { useState } from "react";
-import { sleep_types } from "../../common/types/index.ts";
+import { sleep_types } from "@/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBed } from "@fortawesome/free-solid-svg-icons";
-
-
 
 export default function SleepUI() {
 

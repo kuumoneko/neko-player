@@ -1,15 +1,11 @@
 import { useState, useRef, useEffect, RefObject } from "react";
-import Slider from "../../common/Slider/index.tsx";
+import Slider from "@/components/Player/common/Slider";
 
-export default function VolumeUI({
-    audioRef,
-}: {
-    audioRef: RefObject<HTMLAudioElement>;
-}) {
+export default function VolumeUI() {
     const [volume, setvolume] = useState(50);
     const volumeSliderRef = useRef<HTMLInputElement>(null);
     useEffect(() => {
-        setvolume(Number(localStorage.getItem("volume") || 50));
+        setvolume(Number(localStorage.getItem("volume") ?? 50));
     }, []);
 
     useEffect(() => {
@@ -21,9 +17,6 @@ export default function VolumeUI({
                 "--value-percent",
                 `${percent}%`
             );
-            if (audioRef.current) {
-                audioRef.current.volume = percent / 100;
-            }
             localStorage.setItem("volume", String(percent));
         }
     }, [volume]);

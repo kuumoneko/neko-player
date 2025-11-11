@@ -8,10 +8,9 @@ export default function Slider({ name, width, reff, value, Change, max }: { name
             type="range"
             min="0"
             max={max}
-            value={value || 0}
+            value={value ?? 0}
             style={{
                 width: `${width}px`,
-
             }}
             className={`${name} 
                         w-[${width}px] h-[5px]

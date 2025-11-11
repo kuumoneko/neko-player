@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, RefObject } from "react";
-import { sleep_types } from "../../common/types/index.ts";
+import { sleep_types } from "@/types";
 import {
     faShuffle,
     faStepBackward,
@@ -9,15 +9,24 @@ import {
     faRepeat,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import formatDuration from "../../../../utils/format.ts";
-import Slider from "../../common/Slider/index.tsx";
+import { formatDuration } from "@/utils/format.ts";
+import Slider from "@/components/Player/common/Slider";
 import backward from "./common/backward.ts";
 import forward from "./common/forward.ts";
 import stream from "@/utils/music/stream.ts";
 
+enum YotubePlaybackState {
+    Unstarted = -1,
+    Playing = 1,
+    Paused = 2,
+    Ended = 0,
+    Cued = 5,
+    Buffering = 3,
+}
+
 const handleCloseTab = () => {
     try {
-        // window.location.href = "https://www.google.com";
+        window.location.href = "https://www.google.com";
     } catch {
         return "no";
     }
@@ -39,60 +48,84 @@ export default function ControlUI() {
 
     const [Time, setTime] = useState(0);
     const [duration, setduraion] = useState(0);
+    const [playedsongs, setplayedsongs] = useState([]);
+
     const TimeSliderRef = useRef<HTMLInputElement>(null);
 
-    // --- Core Player Logic ---
+    useEffect(() => {
+        setplayedsongs(
+            JSON.parse(localStorage.getItem("playedsongs") as string) ?? []
+        );
+    }, []);
 
-    // Effect 1: Initializes the YouTube Player or loads a new video when the track changes
+    // --- Core Player Logic ---
     useEffect(() => {
         (async () => {
-            // We only proceed if the source is YouTube and we have an ID
             let { source, id } = currentTrack;
-            if (currentTrack.source !== "youtube" || !currentTrack.id) {
-                const temp = await stream(
-                    currentTrack.source as any,
-                    currentTrack.id
-                );
+
+            if (source === "" || id === "") {
+                return;
+            }
+
+            if (source === "spotify" && id.length > 0) {
+                const temp = await stream(source as any, id);
                 source = "youtube";
                 id = temp;
+            } else if (!id || !source) {
+                return;
             }
 
             const onPlayerReady = (event: any) => {
-                console.log("YouTube Player is ready.");
                 setisloading(false);
                 setduraion(event.target.getDuration());
                 const volume = localStorage.getItem("volume");
                 if (volume) {
                     event.target.setVolume(Number(volume));
                 }
-                // If the user clicked play while the player was loading, start playing.
                 if (played) {
                     event.target.playVideo();
                 }
             };
 
             const onPlayerStateChange = (event: any) => {
-                if (event.data === (window as any).YT.PlayerState.PLAYING) {
+                if (event.data === YotubePlaybackState.Playing) {
                     const newDuration = event.target.getDuration();
                     if (newDuration > 0) {
                         setduraion(newDuration);
                     }
+                    setisloading(false);
+                    setplayed(true);
                 }
-                // YT.PlayerState.ENDED === 0
+                if (event.data === YotubePlaybackState.Paused) {
+                    setplayed(false);
+                }
                 if (event.data === 0) {
-                    handleTrackEnd();
+                    const curr_player = event.target;
+                    const repeat = localStorage.getItem("repeat") ?? "disable";
+                    const temp =
+                        localStorage.getItem("kill time") ?? sleep_types.no;
+                    check_eot(temp as sleep_types);
+
+                    if (repeat === "one" && curr_player) {
+                        curr_player.seekTo(0);
+                        setPlayer(curr_player);
+                        setplayed(true);
+                    } else {
+                        forward(setCurrentTrack);
+                    }
                 }
             };
 
             const initializePlayer = () => {
                 if (!playerContainerRef.current) return;
+
                 const newPlayer = new (window as any).YT.Player(
                     playerContainerRef.current,
                     {
-                        height: "0", // Making the player invisible
+                        height: "0",
                         width: "0",
-                        videoId: currentTrack.id,
-                        playerVars: { controls: 0 }, // Hiding native controls
+                        videoId: id,
+                        playerVars: { controls: 0 },
                         events: {
                             onReady: onPlayerReady,
                             onStateChange: onPlayerStateChange,
@@ -102,7 +135,6 @@ export default function ControlUI() {
                 setPlayer(newPlayer);
             };
 
-            // Check if the YouTube Iframe API script is loaded
             if (!(window as any).YT || !(window as any).YT.Player) {
                 (window as any).onYouTubeIframeAPIReady = initializePlayer;
                 if (
@@ -114,41 +146,37 @@ export default function ControlUI() {
                     tag.src = "https://www.youtube.com/iframe_api";
                     const firstScriptTag =
                         document.getElementsByTagName("script")[0];
-                    firstScriptTag?.parentNode?.insertBefore(
+                    (firstScriptTag.parentNode as any).insertBefore(
                         tag,
                         firstScriptTag
                     );
                 }
             } else {
-                // If API is loaded, either create a new player or load the video into the existing one
                 if (!player) {
                     initializePlayer();
                 } else {
-                    player.loadVideoById(currentTrack.id);
-                    console.log(player.getDuration());
+                    if (typeof player.loadVideoById === "function") {
+                        player.loadVideoById(id);
+                    } else {
+                        initializePlayer();
+                    }
                 }
             }
         })();
-    }, [currentTrack]); // This effect is the heart of the player, running when the track changes
+    }, [currentTrack]);
 
-    // --- State Sync and UI Control ---
-
-    // Effect 2: Periodically checks localStorage to see if the track has changed.
     useEffect(() => {
         const check = () => {
             const playing = JSON.parse(localStorage.getItem("playing") || "{}");
-            // If the ID in localStorage is different from our state, update the state
             if (
                 playing.id &&
                 (playing.id !== currentTrack.id ||
                     playing.source !== currentTrack.source)
             ) {
                 setisloading(true);
-                setplayed(true); // Autoplay next song
-                // This state change will trigger the main player useEffect
+                setplayed(true);
                 setCurrentTrack({ id: playing.id, source: playing.source });
 
-                // Update Media Session API
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: playing.name,
                     artist: playing.artists,
@@ -160,18 +188,6 @@ export default function ControlUI() {
                         },
                     ],
                 });
-                navigator.mediaSession.setActionHandler("play", () => {
-                    setplayed(true);
-                });
-                navigator.mediaSession.setActionHandler("pause", () => {
-                    setplayed(false);
-                });
-                navigator.mediaSession.setActionHandler("nexttrack", () => {
-                    forward(setCurrentTrack);
-                });
-                navigator.mediaSession.setActionHandler("previoustrack", () => {
-                    backward();
-                });
             }
         };
         const run = setInterval(check, 500);
@@ -182,23 +198,12 @@ export default function ControlUI() {
     useEffect(() => {
         if (!player || isloading) return;
         if (played) {
+            setisloading(false);
             player.playVideo();
         } else {
             player.pauseVideo();
         }
     }, [played, player, isloading]);
-
-    useEffect(() => {
-        const run = setInterval(() => {
-            if (player && typeof player.setVolume === "function") {
-                const volume = localStorage.getItem("volume");
-                if (volume && player.getVolume() !== Number(volume)) {
-                    player.setVolume(Number(volume));
-                }
-            }
-        }, 100);
-        return () => clearInterval(run);
-    }, []);
 
     // Effect 4: Time tracking and other periodic checks
     useEffect(() => {
@@ -239,25 +244,16 @@ export default function ControlUI() {
     // --- Media Session and Sleep Timer (largely unchanged) ---
 
     useEffect(() => {
-        navigator.mediaSession.setActionHandler("play", () => {
-            setplayed(true);
-        });
-        navigator.mediaSession.setActionHandler("pause", () => {
-            setplayed(false);
-        });
-        navigator.mediaSession.setActionHandler("nexttrack", () => {
-            forward(setCurrentTrack);
-        });
-        navigator.mediaSession.setActionHandler("previoustrack", () => {
-            backward();
-        });
-
-        return () => {
-            navigator.mediaSession.setActionHandler("play", () => {});
-            navigator.mediaSession.setActionHandler("pause", () => {});
-            navigator.mediaSession.setActionHandler("nexttrack", () => {});
-            navigator.mediaSession.setActionHandler("previoustrack", () => {});
-        };
+        navigator.mediaSession.setActionHandler("play", () => setplayed(true));
+        navigator.mediaSession.setActionHandler("pause", () =>
+            setplayed(false)
+        );
+        navigator.mediaSession.setActionHandler("nexttrack", () =>
+            forward(setCurrentTrack)
+        );
+        navigator.mediaSession.setActionHandler("previoustrack", () =>
+            backward()
+        );
     }, []); // Empty dependency array means this runs once
 
     const check_eot = (temp: sleep_types) => {
@@ -273,20 +269,6 @@ export default function ControlUI() {
             }
         }
     };
-
-    const handleTrackEnd = () => {
-        const repeat = localStorage.getItem("repeat") ?? "disable";
-        const temp = localStorage.getItem("kill time");
-        check_eot(temp as sleep_types);
-
-        if (repeat === "one" && player) {
-            player.seekTo(0);
-            player.playVideo();
-        } else {
-            forward(setCurrentTrack); // forward() should just update localStorage, the effects will handle the rest
-        }
-    };
-
     // ... your other useEffects for sleep timer can remain as they are ...
 
     // --- Event Handlers ---
@@ -299,13 +281,6 @@ export default function ControlUI() {
         }
     };
 
-    const [playedsongs, setplayedsongs] = useState([]);
-    useEffect(() => {
-        setplayedsongs(
-            JSON.parse(localStorage.getItem("playedsongs") as string) ?? []
-        );
-    }, []);
-
     return (
         <div className="flex flex-col items-center">
             {/* This div is the mount point for the hidden YouTube iframe */}
@@ -314,7 +289,11 @@ export default function ControlUI() {
                 className="pointer-events-none absolute -top-full -left-full"
             ></div>
 
-            <div className={`controls flex flex-row gap-2.5`}>
+            <div
+                className={`controls flex flex-row gap-2.5 ${
+                    isloading ? "opacity-50 pointer-events-none" : ""
+                }`}
+            >
                 {/* Shuffle Button */}
                 <button
                     className="mx-0.5 p-0.5 cursor-default select-none"
@@ -344,15 +323,7 @@ export default function ControlUI() {
                 {/* Play/Pause Button */}
                 <button
                     className="mx-0.5 p-0.5 cursor-default select-none"
-                    onClick={() => {
-                        setplayed(!played);
-                        if (!player || isloading) return;
-                        if (played) {
-                            player.playVideo();
-                        } else {
-                            player.pauseVideo();
-                        }
-                    }}
+                    onClick={() => setplayed(!played)}
                 >
                     <FontAwesomeIcon icon={played ? faPause : faPlay} />
                 </button>

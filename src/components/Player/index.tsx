@@ -5,13 +5,19 @@ import DataUI from "./components/data/index.tsx";
 import VolumeUI from "./components/volume/index.tsx";
 import SleepUI from "./components/sleep/index.tsx";
 import ControlUI from "./components/control/index.tsx";
-import { RefObject, useEffect, useRef } from "react";
+import {  useEffect,  useState } from "react";
 
 export default function Player({ seturl }: { seturl: (a: string) => void }) {
-    const audioRef = useRef<HTMLAudioElement | null>(null);
-    useEffect(() => {
-        audioRef.current = new Audio();
-    }, []);
+    const [isAuth, setAuth] = useState(false);
+    
+        useEffect(() => {
+            if (window.location.href.includes("auth")) {
+                setAuth(true);
+            }
+        }, []);
+        if (isAuth) {
+            return <></>;
+        }
     return (
         <div className="player h-[5%] w-[90%] bg-slate-700 text-white mt-5 rounded-xl flex justify-between items-center px-[5px] m-0 select-none">
             <DataUI seturl={seturl} />
@@ -30,7 +36,7 @@ export default function Player({ seturl }: { seturl: (a: string) => void }) {
                 >
                     <FontAwesomeIcon icon={faDatabase} />
                 </span>
-                <VolumeUI audioRef={audioRef as RefObject<HTMLAudioElement>} />
+                <VolumeUI />
             </div>
         </div>
     );

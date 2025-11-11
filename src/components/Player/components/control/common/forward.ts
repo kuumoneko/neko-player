@@ -1,4 +1,4 @@
-import { add_items } from "../../../../../utils/add_items.ts";
+import { add_items } from "@/utils/add_items";
 
 export default async function forward(
     getUrl:any,

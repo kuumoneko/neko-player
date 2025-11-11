@@ -36,7 +36,7 @@ export default function DataUI({ seturl }: { seturl: (a: string) => void }) {
                 setsource(data.source);
             }
             run();
-        }, 200);
+        }, 100);
         return () => window.clearInterval(run);
     }, []);
 

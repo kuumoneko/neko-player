@@ -3,6 +3,8 @@ import { Buffer } from "node:buffer"
 import { Album, Api_key, Artist, Playlist, Search, Track } from "@/types";
 import Mongo_client_Component from "../mongodb";
 import mongo_spotify_tracks from "../../../pages/api/mongodb/spotify/tracks";
+import stream from "@/utils/music/stream";
+import Player from "@/lib/player";
 
 interface Spotify_Key { key: string, client_id: string, token: string, isReached: boolean, when: number }
 export default class Spotify {
@@ -213,14 +215,13 @@ export default class Spotify {
                             id: item.track.id,
                             duration: item.track.duration_ms,
                             releasedDate: item.track.album.release_date,
+                            matched:null,
                         } as Track
                     }))
                 url = video?.tracks?.next || undefined;
             }
-
-            this.writedata(tracks.map((item: Track) => item.id), tracks)
-
-            return {
+            
+            return  {
                 source: "spotify",
                 name: name,
                 duration: duration,

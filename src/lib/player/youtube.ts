@@ -168,12 +168,9 @@ export default class Youtube {
                     } else {
                         try {
                             data = JSON.parse(data)
-                            // console.log(data)
                         }
                         catch (e) {
                             console.log(e)
-                            // console.log(`${url}&key=${key}`)
-                            // console.log(data)
                         }
                         if (data?.error && data?.error?.errors[0].reason === "quotaExceeded") {
                             const temp = this.api_keys;
@@ -196,7 +193,6 @@ export default class Youtube {
                     }
                 }
                 catch (e) {
-                    console.log("error")
                     console.log(e)
                 }
             }
@@ -263,7 +259,7 @@ export default class Youtube {
                             id: item.id as string,
                             duration: item.snippet.liveBroadcastContent === "none" ? iso8601DurationToMilliseconds(item.contentDetails.duration) : 0, // in miliseconds
                             releasedDate: item.snippet.publishedAt.split("T")[0] as unknown as string ?? "",
-                            music_url: null
+                            matched:null
                         })
                     }
                     st = ed + 1;
@@ -412,7 +408,7 @@ export default class Youtube {
                 endpoint += `&sp=${channel_sp}`;
             }
 
-            const create_page = await fetch(encodeURI(endpoint));
+            const create_page = await fetch(endpoint, {redirect:"error"});
             const pageData = await create_page.text();
             const ytInitData = pageData.split("var ytInitialData =");
 
@@ -476,6 +472,7 @@ export default class Youtube {
             }
         }
         catch (e: any) {
+            console.warn(e)
             throw new Error(e);
         }
     }
@@ -649,7 +646,6 @@ export default class Youtube {
 
                 }
                 catch (e) {
-                    console.log(id);
                     console.log(e);
                 }
 

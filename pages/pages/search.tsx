@@ -36,9 +36,11 @@ export default function Search({
     }, [url]);
     return (
         <>
-            {(searchh?.result?.tracks?.length > 0 ||
-                searchh?.result?.playlists?.length > 0 ||
-                searchh?.result?.artists?.length > 0) && (
+            {[
+                ...(searchh?.result?.tracks ?? {}),
+                ...(searchh?.result?.playlists ?? []),
+                ...(searchh?.result?.artists ?? []),
+            ].length > 0 && (
                 <List
                     list={
                         url.split("/").slice(2)[1] === "video"

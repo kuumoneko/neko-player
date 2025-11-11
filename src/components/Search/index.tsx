@@ -64,8 +64,8 @@ export default function SearchBar({
                             mode,
                         } = convert_link(e.target.value);
                         if (
-                            sourcee === undefined ||
-                            mode === undefined ||
+                            sourcee === undefined ??
+                            mode === undefined ??
                             id === undefined
                         ) {
                             if (source === "") {

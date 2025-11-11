@@ -4,14 +4,13 @@ import {
     faShare,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import formatDuration from "@/utils/music/formatDuration";
+import {formatDuration} from "@/utils/format";
 import Loading from "@/components/Loading";
-import Play from "../Show/common/play";
+import Play from "@/components/Show/common/play";
 import { useEffect, useState } from "react";
 import { goto } from "@/lib/url";
 import { Track } from "@/types";
-import Queue from "../Show/common/queue";
-import download from "../Show/common/download";
+import Queue from "@/components/Show/common/queue";
 
 export default function List({
     list,
@@ -83,12 +82,12 @@ export default function List({
                     return (
                         <div
                             key={
-                                item.name || `${source} ${mode} ${id} ${index}`
+                                item.name ?? `${source} ${mode} ${id} ${index}`
                             }
                             className={`vid_${
                                 index + 1
                             } flex h-[95px] w-[95%] flex-row items-center justify-between mb-5 bg-slate-700 hover:bg-slate-600 rounded-lg`}
-                            onDoubleClick={() => {
+                            onClick={() => {
                                 if (type === "video") {
                                     Play(item, source, mode, id, list);
                                 } else if (type === "playlist") {
@@ -133,13 +132,13 @@ export default function List({
                                     <div className="flex flex-row items-center justify-between">
                                         <div>
                                             <span className="releaseDate cursor-default select-none">
-                                                {item.releasedDate || ""}
+                                                {item.releasedDate ?? ""}
                                             </span>
                                             <span className="duration cursor-default select-none ml-[15px]">
                                                 {formatDuration(
                                                     (item.duration as number) /
                                                         1000
-                                                ) || ""}
+                                                ) ?? ""}
                                             </span>
                                         </div>
                                         <div className="action_button flex flex-row-reverse mr-2.5">

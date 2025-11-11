@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 export default function Template({ children }: { children: React.ReactNode }) {
     const [url, seturl] = useState("/");
     useEffect(() => {
-        // alert("This web can not play audio currently. I will fix it later.")
+        localStorage.setItem("playedsongs","[]");
         const run = setInterval(() => {
             seturl(localStorage.getItem("url") ?? "/");
         }, 100);

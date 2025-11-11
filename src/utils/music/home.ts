@@ -3,7 +3,6 @@ import logout from "../user/logout";
 
 export default async function home_page() {
     const pin = await fetch_profile("get", LocalStorageKeys.pin) ?? [];
-    console.log(pin)
     if (typeof pin === "string") {
         if (pin.includes("token")) {
             await logout(localStorage.getItem("username") ?? "");

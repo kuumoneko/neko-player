@@ -40,7 +40,7 @@ export interface Track {
     thumbnail: string,
     duration: number,
     releasedDate: string // DD-MM-YYYY,
-    music_url: string | null
+    matched?: string | null
 }
 
 export interface Search {
@@ -77,4 +77,15 @@ export interface Api_key {
 export interface PlayerOption {
     youtube_api_keys: Api_key[],
     spotify_api_keys: Api_key[]
+}
+
+export enum sleep_types {
+    no = "nosleep",
+    five = "after 5 minutes",
+    ten = "after 10 minutes",
+    tenfive = "after 15 minutes",
+    threeten = "after 30 minutes",
+    fourfive = "after 45 minutes",
+    hour = "after 1 hours",
+    eot = "end of this track"
 }

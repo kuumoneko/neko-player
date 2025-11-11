@@ -64,6 +64,7 @@ export default function Signin({ seturl }: { seturl: (url: string) => void }) {
                     const res = await login(username, password);
                     if (res.ok) {
                         localStorage.setItem("username", username);
+                        localStorage.setItem("access_token", res.access_token)
                         goto("/", seturl);
                         window.location.href = "/";
                     }

@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { parse_body } from "../utils/request";
 import Mongo_client_Component from "@/lib/mongodb";
+import authen from "../auth/index"
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (!["POST"].includes(req.method ?? "")) {
@@ -10,29 +11,39 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         })
     }
     const { mode, id, key, data } = parse_body(req.body);
-    const token = req.cookies.token ?? "";
+    const auth = req.headers.authorization;
+
+    if (!auth) {
+        return res.status(200).json({ ok: false, data: "No token" });
+    }
+    const access_token = auth.split(" ")[1];
+    if (!access_token) {
+        return res.status(200).json({ ok: false, data: "No token" });
+    }
+    const token = req.cookies.refresh_token ?? "";
+    if (!token) {
+        return res.status(200).json({ ok: false, data: "No refresh token" });
+    }
+    const authencation: any = await authen(access_token, token)
+    if (typeof authencation === "string") {
+        return res.status(200).json({ ok: false, data: authencation });
+    }
+
     const client = await Mongo_client_Component();
     const db = client.db("user");
     const collection = db.collection('data');
-    const token_data = await collection.find({ id: id }, { projection: { token: 1, _id: 0 } }).toArray();
-    if (token_data.length === 0) {
-        return res.status(200).json({ ok: false, data: "User not found" })
-    }
-
-    if (token !== token_data[0].token) {
-        return res.status(200).json({ ok: false, data: "Invalid token" })
+    const _collection = db.collection("sessions");
+    const session = await _collection.findOne({
+        username: authencation.username,
+        token: token
+    })
+    if (session === null || session === undefined) {
+        return res.status(200).json({ ok: false, data: "Invalid refresh token" });
     }
 
     if (mode === "get") {
-        const data = (await collection.find({ id: id }, {
-            projection: {
-                [key]: 1,
-                _id: 0
-            }
-        }).toArray())[0][key] ?? []
-
-
-        return res.status(200).json({ ok: true, data: data ?? [] })
+        const data = authencation[key];
+        return res.status(200).json({ ok: true, data: data ?? [], access_token: authencation.access_token ?? ""})
     }
     else {
         const result = await collection.updateOne({ id: id }, {
@@ -40,6 +51,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 [key]: typeof data === "string" ? JSON.parse(data) : data
             }
         })
-        return res.status(200).json({ ok: true, data: result })
+        return res.status(200).json({ ok: true, data: result, access_token: authencation.access_token ?? "" })
     }
 }

@@ -4,12 +4,12 @@ import {
     faDownload,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Track } from "../../../types";
-import formatDuration from "@/utils/format";
-import Loading from "../../Loading";
-import download from "../common/download";
-import Play from "../common/play";
-import Queue from "../common/queue";
+import { Track } from "@/types";
+import {formatDuration} from "@/utils/format";
+import Loading from "@/components/Loading";
+import download from "@/components/Show/common/download";
+import Play from "@/components/Show/common/play";
+import Queue from "@/components/Show/common/queue";
 import { useEffect, useState } from "react";
 import playlist from "@/utils/music/playlist";
 
@@ -99,7 +99,7 @@ export default function List({
                             className={`vid_${
                                 index + 1
                             } flex h-[95px] w-[95%] flex-row items-center justify-between mb-5 bg-slate-700 hover:bg-slate-600 rounded-lg`}
-                            onDoubleClick={() => {
+                            onClick={() => {
                                 Play(item, source, mode, id, list);
                             }}
                         >

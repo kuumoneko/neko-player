@@ -7,9 +7,9 @@ import {
     faHeart,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Track } from "../../../types";
-import formatDuration from "../../../utils/format";
-import Loading from "../../Loading";
+import { Track } from "@/types";
+import {formatDuration} from "@/utils/format";
+import Loading from "@/components/Loading";
 import { useEffect, useState } from "react";
 import add_to_download from "@/utils/add_download";
 import fetch_profile, { LocalStorageKeys } from "@/utils/profile";
@@ -170,9 +170,9 @@ export default function Top({
                                             const other_tracks: any[] =
                                                 playlist?.filter(
                                                     (item: any) =>
-                                                        item.track.id !==
+                                                        item.id !==
                                                         track.id
-                                                ) || [];
+                                                ) ?? [];
 
                                             if (other_tracks.length > 0) {
                                                 const shuffle =
@@ -289,7 +289,6 @@ export default function Top({
                                                 "get",
                                                 LocalStorageKeys.pin
                                             );
-                                            console.log(pin);
                                             if (isPin) {
                                                 pin = pin.filter(
                                                     (item: any) => {

@@ -1,4 +1,4 @@
-import { Track } from "../../../types";
+import { Track } from "@/types";
 
 export default async function Queue(item: Track, source: string) {
 
